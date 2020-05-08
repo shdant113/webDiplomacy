@@ -64,6 +64,13 @@ class adminActions extends adminActionsForms
 					If the game has not started yet the user will be removed from the game entirely, and if they were the only user in the game, the game will be cancelled.',
 				'params' => array('userID'=>'User ID','gameID'=>'Game ID'),
 			),
+			'cdUserAndBlock' => array(
+				'name' => 'Force a user into CD and block',
+				'description' => 'Force a user into CD in a given game and prevent them from being able to rejoin the game.<br />
+					Forced CDs do not count against the player\'s RR.<br />
+					If the game has not started yet the user will be removed from the game entirely, and if they were the only user in the game, the game will be cancelled.',
+				'params' => array('userID'=>'User ID','gameID'=>'Game ID'),
+			),
 			'replaceCoutries' => array(
 				'name' => 'Replace country-player.',
 				'description' => 'Replace one player in a given game with another one. This does not impact points. If the replacing player does not meet the RR requirements for the game or is already in the game, that game replacement will not occur.',
@@ -1246,6 +1253,52 @@ class adminActions extends adminActionsForms
 		$emailToken = substr(md5(Config::$secret.$email),0,5).'%7C'.urlencode($email);
 
 		return "Please give the user the following link: <br>".$thisURL.'?emailToken='.$emailToken;
+	}
+
+	public function cdUserAndBlock(array $params)
+	{
+		global $DB, $Game;
+
+		require_once(l_r('gamemaster/game.php'));
+
+		$User = new User($params['userID']);
+		if ( isset($params['gameID']) && $params['gameID'] )
+		{
+			$Variant=libVariant::loadFromGameID($params['gameID']);
+			$Game = $Variant->processGame($params['gameID']);
+
+			// If the game is finished do not CD and throw an error.
+			if( $Game->phase == 'Finished' )
+			{
+				throw new Exception(l_t("Invalid phase to set CD"));
+			}
+
+			// If the game hasn't started check if there's just 1 person in it. If there is then delete the game, otherwise remove that 1 user.
+			else if( $Game->phase == 'Pre-game' )
+			{
+				if(count($Game->Members->ByID)==1) 
+				{
+					processGame::eraseGame($Game->id);
+				}
+				else
+				{
+					$DB->sql_put("DELETE FROM wD_Members WHERE gameID = ".$Game->id." AND userID = ".$params['userID']);
+					User::blockFromGame($User->id, $Game->id);
+
+					// If there are still people in the game reset the min bet in case the game was full to readd the join button.
+					$Game->resetMinimumBet();
+				}
+			}
+			else
+			{
+				$Game->Members->ByUserID[$User->id]->setLeft(1);
+				User::blockFromGame($User->id, $Game->id);
+				$Game->resetMinimumBet();
+			}
+		}
+
+		return l_t('This user was put into civil-disorder');
+
 	}
 
 }
