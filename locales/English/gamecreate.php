@@ -25,409 +25,468 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @subpackage Forms
  */
 ?>
+
 <div class="content-bare content-board-header content-title-header">
-	<div class="pageTitle barAlt1">Create a new game</div>
-	<div class="pageDescription">Start a new customized game of Diplomacy.</div>
+	<div class="pageTitle barAlt1">Create a new Diplomacy game</div>
+	<div class="pageDescription">Start a new game of Diplomacy. Use preset defaults or customize it yourself.</div>
 </div>
+
 <div class="content content-follow-on">
-	<p><a href="botgamecreate.php">Play A Game Against Bots</a></p>
+	<div class="game-create-outer-container">
+		<p class="game-create-p">
+			Creating a game is easy. Complete the following forms to create your game.
+		</p>
 
-	<div class = "gameCreateShow">
-		<form method="post">
-			<p>
-				<strong>Game Name:</strong></br>
-				<input class = "gameCreate" type="text" name="newGame[name]" value="" size="30">
-			</p>
-
-			<strong>Bet size: (5-<?php print $User->points.libHTML::points(); ?>)</strong>
-			<img id = "modBtnBet" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="betModal" class="modal">
-				<!-- Modal content -->
-				<div class="modal-content">
-					<span class="close5">&times;</span>
-					<p><strong>Bet:</strong> </br>
-						The bet required to join this game. This is the amount of points that all players, including you,
-						must put into the game's "pot" (<a href="points.php" class="light">read more</a>).<br /><br />
-					</p>
-				</div>
+		<?php
+		// change this later or everything will be bad
+		if (!isset(Config::$customForumURL))
+		{
+		?>
+			<!-- BOTS OR HUMANS -->
+			<!-- for bot games, link to botcreate.php or make a form here, which you also need to fix up -->
+			<!-- this will actually load up one form or the other when this is done -->
+			<div class="game-create-bothuman">
+				<p class="game-create-p">
+					webDiplomacy is the first online Diplomacy site to feature gameplay against true artificial intelligence, 
+					trained on the decisions that real people made in countless situations over thousands of games. You can play 
+					against our artificial intelligence bots, or you can play a game against real people. 
+				</p>
+				<strong>
+					Play a game against <span class="game-create-link">bots</span> or <span class="game-create-link">humans</span>?
+				</strong>
 			</div>
-			<input class = "gameCreate" type="text" name="newGame[bet]" size="7" value="<?php print $formPoints ?>" />
-			
-			</br></br>
-			<strong>Phase length: (5 min - 10 days)</strong>
-			<img id = "modBtnPhaseLength" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="phaseLengthModal" class="modal">
-				<!-- Modal content -->
-				<div class="modal-content">
-					<span class="close4">&times;</span>
-					<p><strong>Phase Length: </strong></br>
-						How long each phase of the game will last in hours. Longer phase hours means a slow game with more time to talk. 
-						Shorter phases require players be available to check the game frequently.
-					</p>
-				</div>
-			</div>
-			<select class = "gameCreate" name="newGame[phaseMinutes]" id="selectPhaseMinutes">
-			<?php
-				$phaseList = array(5,7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
-					1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
+		<?php
+		}
+		?>
+		<br>
 
-				foreach ($phaseList as $i) { print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>'; }
-			?>
-			</select>
-			
-			<p id="phaseSwitchPeriodPara">
-				<strong>Time Until Phase Swap</strong></br>
-				<select class = "gameCreate" id="selectPhaseSwitchPeriod" name="newGame[phaseSwitchPeriod]">
-				<?php
-					$phaseList = array(-1, 10, 15, 20, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360);
-					foreach ($phaseList as $i) 
-					{
-						if ($i != -1)
-						{
-							print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>';
+		<!-- BEGIN HUMAN FORM HERE -->
+		<form class="human-form" method="post">
+
+			<div class="game-create-private">
+				<h2 class="game-create-title">Public or Private Game?</h2>
+				<p class="game-create-p">
+					If you are playing against family, friends, coworkers, or other people that you know from outside of webDiplomacy, 
+					we ask that you play a private game. Your game will be locked with a password so that people who you do not know 
+					do not accidentally join your game. That way, you can play without worrying about <a class="light" href="rules.php">metagaming</a> 
+					or violating any of our other <a class="light" href="rules.php">rules</a> on playing with people that you know. You can also use 
+					a private game to invite certain players that you want to play with if this is a tournament or special game that 
+					only certain people should join. 
+					<br><br>
+					If this is a private game, you will be prompted to enter a password for the game at the end of this form. 
+					If none of that applies to you, you can create a public game and it will be open for anyone to join.
+				</p>
+				<strong>
+					Play a <span class="game-create-link">private</span> or <span class="game-create-link">public</span> game?
+				</strong>
+			</div>
+
+			<!-- GAME NAME -->
+			<div class="game-create-name">
+				<h2 class="game-create-title">Game Title</h2>
+				<p class="game-create-p">As the creator of a new game, you get to give it a title.</p>
+				<strong>What do you want the title of your new game to be?</strong>
+				<input class="gameCreate" type="text" name="newGame[name]" value="" size="30">
+			</div>
+
+			<!-- VARIANT CHOICES -->
+			<div class="game-create-variant">
+				<h2 class="game-create-title">Map Choice</h2>
+				<p class="game-create-p">
+					webDiplomacy hosts a number of map choices to choose from. By default, the classic Diplomacy board,
+					the same one used in the Avalon Hill board game, is selected for you, and if you are new to the game
+					we recommend playing on it until you are more comfortable. The classic board requires 7 players and is
+					a representation of pre-WWI Europe. We have a number of other variant maps that you can select and you can
+					read about them all <a class="light" href="variants.php">here</a>, or check out one from the following list that you are
+					curious about to read more:
+					<br><br>
+					<?php
+					foreach (Config::$variants as $variantID => $variantName) {
+						if ($variantID != 57) {
+							$Variant = libVariant::loadFromVariantName($variantName);
+							print $Variant->link() . '</br>';
 						}
-						else 
-						{
-							print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'> No phase switch</option>';
+					}
+					?>
+					<br>
+					Please note that if you choose either 1-on-1 map, your bet will be set to 5 points and the game will be unranked by default.
+				</p>
+				<strong>Which Diplomacy version do you want to play?</strong>
+				<select id="variant" class="gameCreate" name="newGame[variantID]" onchange="setBotFill()">
+					<?php
+					$first = true;
+					foreach (Config::$variants as $variantID => $variantName) {
+						if ($variantID != 57) {
+							$Variant = libVariant::loadFromVariantName($variantName);
+							switch ($variantName) {
+									// use local storage to store choice
+								case "Classic":
+									print '<option name="newGame[variantID]" selected value="' . $variantID . '">Classic</option>';
+									break;
+
+								case "World":
+									print '<option name="newGame[variantID]" value="' . $variantID . '">World Diplomacy IX</option>';
+									break;
+
+								case "AncMed":
+									print '<option name="newGame[variantID]" value="' . $variantID . '">The Ancient Mediterranean</option>';
+									break;
+
+								case "ClassicFvA":
+									print '<option name="newGame[variantID]" value="' . $variantID . '">Classic 1-on-1 - France vs Austria</option>';
+									break;
+
+								case "ClassicChaos":
+									print '<option name="newGame[variantID]" value="' . $variantID . '">Classic - Chaos</option>';
+									break;
+
+								case "Modern2":
+									print '<option name="newGame[variantID]" value="' . $variantID . '">Modern Diplomacy II</option>';
+									break;
+
+								case "Empire4":
+									print '<option name="newGame[variantID]" value="' . $variantID . '">Fall of the American Empire IV</option>';
+									break;
+
+								case "ClassicGvI":
+									print '<option name="newGame[variantID]" value="' . $variantID . '">Classic 1-on-1 - Germany vs Italy</option>';
+									break;
+
+								default:
+									print '<option name="newGame[variantID]" value="' . $variantID . '">' . $variantName . '</option>';
+									break;
+							}
 						}
 					}
-				?>
+					?>
 				</select>
-			</p>
-			
-			<p id="nextPhaseMinutesPara">
-				<strong>Phase Length After Swap</strong></br>
-				<select class = "gameCreate" id="selectNextPhaseMinutes" name="newGame[nextPhaseMinutes]">
-				<?php
-					$phaseList = array(1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
-					foreach ($phaseList as $i) 
-					{
-						print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>';
-					}
-				?>
-				</select>
-			</p>
-			
-			<p>
-				<strong>Time to Fill Game: (5 min - 14 days)</strong></br>
-				<select class = "gameCreate" id="wait" name="newGame[joinPeriod]">
-				<?php
-					$phaseList = array(5,7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
-					1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400, 20160);
-					foreach ($phaseList as $i) 
-					{
-						print '<option value="'.$i.'"'.($i==10080 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>';
-					}
-				?>
-				</select>
-			</p>
-			
-			<strong>Game Messaging:</strong>
-			<img id = "modBtnMessaging" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="messagingModal" class="modal">
-				<!-- Modal content -->
-				<div class="modal-content">
-					<span class="close7">&times;</span>
-					<p><strong>Game Messaging:</strong> </br>
-						The type of messaging allowed in a game.</br></br>
-						All: Global and Private Messaging allowed. </br></br>
-						Global Only: Only Global Messaging allowed.</br></br>
-						None: No messaging allowed.</br></br>
-						Rulebook: No messaging allowed during build and retreat phases.</br>
-					</p>
-				</div>
-			</div>
-			<select class = "gameCreate" id="pressType" name="newGame[pressType]" onchange="setBotFill()">
-				<option name="newGame[pressType]" value="Regular" selected>All </option>
-				<option name="newGame[pressType]" value="PublicPressOnly">Global only</option>
-				<option name="newGame[pressType]" value="NoPress">None (No messaging)</option>
-				<option name="newGame[pressType]" value="RulebookPress">Per rulebook</option>
-			</select>
 
-			</br></br>
-			<strong>Variant type (map choices):</strong>
-			<img id = "modBtnVariant" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="variantModal" class="modal">
-				<!-- Modal content -->
-				<div class="modal-content">
-					<span class="close3">&times;</span>
-					<p><strong>Variant:</strong> </br>
-						Type of Diplomacy game from a selection of maps and alternate rule settings available. Click any of the variant names to view the details on the variants page.
-						<br /><br />
-						<strong>Available variants:</strong> </br>
+				<!-- figure something out for 1v1, if it is a 1v1 game skip the points/ranked options? -->
+			</div>
+
+			<!-- SCORING -->
+			<div class="game-create-scoring">
+				<h2 class="game-create-title">Scoring</h2>
+				<p class="game-create-p">
+					On webDiplomacy, games can be ranked or unranked. In a ranked game, you can lose your bet if your country is defeated,
+					or if someone else wins the game, and your Ghost Rating will be affected. However, in an unranked game, your bet will
+					be returned to you and your Ghost Rating will not be affected at all. In any ranked game, the winner will take the
+					entire pot. However, not every ranked game ends with one player winning. Most games end in a draw and this setting
+					will determine how points are split up if a game is eventually drawn.
+					<br><br>
+					In Draw-Size Scoring (DSS), the pot is split equally between the remaining players when the game draws.
+					The winner takes all the points.
+					<br><br>
+					In Sum-of-Squares Scoring (SoS), the pot is divided based on how many supply centers you control when the game is drawn.
+					<br><br>
+					In an Unranked game, your bet will be returned to you whether you win or lose, and you will not win any points. Please
+					note that in an Unranked game, your bet will always be the minimum bet of 5 points.
+					<br><br>
+					You can read about all of our scoring types in depth <a class="light" href="points.php#DSS">here</a>.
+				</p>
+				<strong>Which scoring type do you choose for your game?</strong>
+				<select class="gameCreate" name="newGame[potType]">
+					<?php
+					$type = array("Winner-takes-all", "Sum-of-squares", "Unranked");
+					foreach ($type as $t) {
+						switch ($t) {
+								// use local storage to store choice
+							case "Winner-takes-all":
+								print '<option name="newGame[potType]" value="Winner-takes-all" selected>Draw-Size Scoring</option>';
+								break;
+
+							case "Sum-of-squares":
+								print '<option name="newGame[potType]" value="Sum-of-squares">Sum-of-Squares</option>';
+								break;
+
+							case "Unranked":
+								print '<option name="newGame[potType]" value="Unranked">Unranked</option>';
+								break;
+						}
+					}
+					?>
+				</select></br></br>
+				</p>
+			</div>
+
+			<!-- GAME BET -->
+			<!-- do not show if unranked -->
+			<div class="game-create-bet">
+				<h2 class="game-create-title">Betting Points</h2>
+				<p class="game-create-p">
+					Diplomacy is a game of winning and losing. On webDiplomacy, each game has a pot. The winner of each game will
+					take the pot as a prize for their conquest. The losers will lose the points that they put into the pot. You
+					can bet up to <?php print $User->points; ?> points in this game, and anyone else that joins the game will have
+					to match your bet in order to join. You cannot bet fewer than 5 points.
+					<br><br>
+					You can never have below 100 points, including those currently bet on games. If you have less than 100 points,
+					you will be topped off to 100 again once some of your current games finish.
+				</p>
+				<strong>How many points do you want to bet (5-<?php print $User->points . libHTML::points(); ?>)?</strong>
+				<input class="gameCreate" type="text" name="newGame[bet]" size="7" value="<?php print $formPoints ?>" />
+			</div>
+
+			<!-- PHASE LENGTH -->
+			<div class="game-create-phase-info">
+				<div class="game-create-phase-length">
+					<h2 class="game-create-title">Phase Length</h2>
+					<p class="game-create-p">
+						The phase length determines how long each stage of the game will be. This will determine how long you spend
+						playing your game. If you choose a longer phase length, or a non-live game, the game will probably last
+						longer overall but require less consistent attention. For example, a game with a 7 day phase length may last
+						for up to a year, but you may only need to check on the game a couple times per week in order to send messages
+						and make sure your orders are submitted. On the other hand, a live game (game with a phase length of 30
+						minutes or less) will require constant attention but will likely end within a few hours.
+						<br>
+					</p>
+					<strong>Do you want to play a live game or a non-live game?</strong>
+					<div class="game-create-live">
+						<div id="live-yes">Live Game</div>
+						<div id="live-no">Non-Live Game</div>
+					</div>
+				</div>
+				<br>
+
+				<!-- if live game -->
+				<div class="game-create-live-open">
+					<strong>Live games move quickly. How long do you want each phase to last?</strong>
+					<select class="gameCreate" name="newGame[phaseMinutes]" id="selectPhaseMinutesLive">
 						<?php
-							foreach(Config::$variants as $variantID=>$variantName)
-							{
-								if($variantID != 57)
-								{
-									$Variant = libVariant::loadFromVariantName($variantName);
-									print $Variant->link().'</br>';
+						$phaseList = array(5, 7, 10, 15, 20, 30);
+						foreach ($phaseList as $i) {
+							print '<option value="' . $i . '"' . ($i == 5 ? ' selected' : '') . '>' . libTime::timeLengthText($i * 60) . '</option>';
+						}
+						?>
+					</select>
+				</div>
+
+				<div class="game-create-phase-switch-outer">
+					<div id="game-create-phase-switch-inner">
+						<p class="game-create-p">
+							Do you or another player in your game need to leave after a certain period of time? In
+							the event that you cannot finish your live game, you can set the phase length to change
+							so that you have a longer amount of time to enter orders after a certain period of time.
+							If you think this will be useful, select how long you want to play before the phase switches
+							below. If you don't think you will need this, the default is set to "No phase switch"
+							and you can simply go forward.
+						</p>
+						<strong>How long do you want to play before the phase length changes?</strong>
+						<select class="gameCreate" id="selectPhaseSwitchPeriod" name="newGame[phaseSwitchPeriod]">
+							<?php
+							$phaseList = array(-1, 10, 15, 20, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360);
+							foreach ($phaseList as $i) {
+								if ($i != -1) {
+									print '<option value="' . $i . '"' . ($i == -1 ? ' selected' : '') . '>' . libTime::timeLengthText($i * 60) . '</option>';
+								} else {
+									print '<option value="' . $i . '"' . ($i == -1 ? ' selected' : '') . '> No phase switch</option>';
 								}
 							}
+							?>
+						</select>
+					</div>
+					<div id="game-create-next-phase">
+						<strong>How long should the phase length be when it changes?</strong>
+						<select class="gameCreate" id="selectNextPhaseMinutes" name="newGame[nextPhaseMinutes]">
+							<?php
+							$phaseList = array(1440, 1440 + 60, 2160, 2880, 2880 + 60 * 2, 4320, 5760, 7200, 8640, 10080, 14400);
+							foreach ($phaseList as $i) {
+								print '<option value="' . $i . '"' . ($i == 1440 ? ' selected' : '') . '>' . libTime::timeLengthText($i * 60) . '</option>';
+							}
+							?>
+						</select>
+					</div>
+				</div>
+
+				<br>
+
+				<!-- if not live game -->
+				<div class="game-create-live-closed">
+					<strong>
+						NON LIVE You can choose for your phase to last as long as 7 days or as little as 1 hour. How long do you want the phase to last?
+					</strong>
+					<select class="gameCreate" name="newGame[phaseMinutes]" id="selectPhaseMinutesNotLive">
+						<?php
+						$phaseList = array(
+							60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
+							1440, 1440 + 60, 2160, 2880, 2880 + 60 * 2, 4320, 5760, 7200, 8640, 10080, 14400
+						);
+						foreach ($phaseList as $i) {
+							print '<option value="' . $i . '"' . ($i == 1440 ? ' selected' : '') . '>' . libTime::timeLengthText($i * 60) . '</option>';
+						}
 						?>
-						<br/>
-						*Please note that 1 vs 1 games will default to a 5 point bet as an unranked game no matter what bet/game type are selected.
-					</p>
+					</select>
 				</div>
-			</div>
-			<select id="variant" class = "gameCreate" name="newGame[variantID]" onchange="setBotFill()">
-			<?php
-				$first=true;
-				foreach(Config::$variants as $variantID=>$variantName)
-				{
-					if($variantID != 57)
-					{
-						$Variant = libVariant::loadFromVariantName($variantName);
-						if($first) { print '<option name="newGame[variantID]" selected value="'.$variantID.'">'.$variantName.'</option>'; }
-						else { print '<option name="newGame[variantID]" value="'.$variantID.'">'.$variantName.'</option>'; }			
-						$first=false;
-					}
-				}
-				print '</select>';
-			?>
-			</br></br>
-			<div id="botFill" style="display:none">
-			<strong>Fill Empty Spots with Bots: </strong>
-			<img id = "modBtnBot" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="botModal" class="modal">
-				<!-- Modal content -->
-				<div class="modal-content">
-					<span class="close8">&times;</span>
-					<p><strong>Fill with Bots:</strong> </br>
-						If the game has at least 2 human players it will 
-						fill with bots if there are empty spaces at the designated start time instead of being cancelled. This type 
-						of game will default to a 5 point bet, unranked, and anonymous regardless of what settings you select. If the game
-						fills with 7 human players it will run just like any normal game and will be included in classic stats. 
-					</p>
-				</div>
-			</div>
-			<input type="checkbox" id="botBox" class="gameCreate" name="newGame[botFill]" value="Yes">
-			</br></br>
-			</div>
-			
-			<strong>Scoring:(<a href="points.php#DSS">See scoring types here</a>)</strong>
-			<img id = "modBtnScoring" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="scoringModal" class="modal">
-				<!-- Modal content -->
-				<div class="modal-content">
-					<span class="close2">&times;</span>
-					<p><strong>Scoring:</strong> </br>
-						This setting determines how points are split up if/when the game draws. <br/><br/>
-						In Draw-Size Scoring, the pot is split equally between the remaining players when the game draws (this setting used to be called WTA). 
-						<br/><br/>
-						In Sum-of-Squares scoring, the pot is divided depending on how many centers you control when the game draws.
-						<br/><br/>
-						In both Draw-Size Scoring and Sum-of-Squares, any solo winner receieves the whole pot.
-						<br/><br/>
-						Unranked games have no effect on your points at the end of the game; your bet is refunded whether you won, drew or lost.
-					</p>
-				</div>
-			</div>
-			<select class = "gameCreate" name="newGame[potType]">
-				<option name="newGame[potType]" value="Winner-takes-all" selected>DSS (Equal split for draws)</option>
-				<option name="newGame[potType]" value="Sum-of-squares">SoS (Weighted split on draw)</option>
-				<option name="newGame[potType]" value="Unranked">Unranked</option>
-			</select></br></br>
 
-			<strong>Anonymous players: </strong>
-			<img id = "modBtnAnon" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="anonModal" class="modal">
-				<!-- Modal content -->
-				<div class="modal-content">
-					<span class="close6">&times;</span>
-					<p><strong>Anonymous players: </strong></br>
-						Decide if player names should be shown or hidden.</br></br> *Please note that games with no messaging are always anonymous regardless of what is set here to prevent cheating.
+				<!-- time to fill game -->
+				<div class="game-create-time-fill">
+					<p class="game-create-p">
+						In order for the game to start, it has to be filled completely with players. You can choose how long you want to
+						allow people to fill the game before the system cancels it if it does not fill with enough players. Please note
+						that if your game is not live, it will start immediately when it is completely filled. However, a live game
+						will take the full length you select even if it is completely filled before then.
 					</p>
+					<strong>How long can it take to fill your game before it is canceled?</strong></br>
+					<select class="gameCreate" id="wait" name="newGame[joinPeriod]">
+						<?php
+						$phaseList = array(
+							5, 7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
+							1440, 1440 + 60, 2160, 2880, 2880 + 60 * 2, 4320, 5760, 7200, 8640, 10080, 14400, 20160
+						);
+						foreach ($phaseList as $i) {
+							print '<option value="' . $i . '"' . ($i == 10080 ? ' selected' : '') . '>' . libTime::timeLengthText($i * 60) . '</option>';
+						}
+						?>
+					</select>
 				</div>
 			</div>
-			<select class = "gameCreate" name="newGame[anon]">
-				<option name="newGame[anon]" value="No" selected>No</option>
-				<option name="newGame[anon]" value="Yes">Yes</option>
-			</select>
 
-			<p>
-				<strong>Draw votes:</strong></br>
-				<select class = "gameCreate" name="newGame[drawType]">
-					<option name="newGame[drawType]" value="draw-votes-public" checked>Show draw votes</option>
+			<!-- PRESS -->
+			<div class="game-create-messaging">
+				<h2 class="game-create-title">Press style</h2>
+				<p class="game-create-p">
+					Diplomacy features different rules for messaging other players during the games, or press. You can choose to allow full press, 
+					meaning that anyone can speak publicly or privately to any player at any time; public press, meaning that anyone can 
+					speak publicly at any time but cannot speak privately to other players; rulebook press, meaning that there is no 
+					messaging allowed during build and retreat phases but full press during spring and autumn phases; or gunboat, meaning 
+					there is no messaging allowed at all.
+					<br><br>
+					Full press is considered default, so it is highlighted for you. Gunboat games are always anonymous.
+				</p>
+				<strong>
+					Which press style would you like your game to be?
+				</strong>
+				<select class="gameCreate" id="pressType" name="newGame[pressType]" onchange="setBotFill()">
+					<?php
+						$pressTypes = array("Regular", "PublicPressOnly", "NoPress", "RulebookPress");
+						foreach ($pressTypes as $type)
+						{
+							switch ($type)
+							{
+								case "Regular":
+									print '<option name="newGame[pressType]" value="Regular" selected>Full Press</option>';
+									break;
+
+								case "PublicPressOnly":
+									print '<option name="newGame[pressType]" value="PublicPressOnly">Public Press</option>';
+									break;
+
+								case "RulebookPress":
+									print '<option name="newGame[pressType]" value="RulebookPress">Rulebook Press</option>';
+									break;
+
+								case "NoPress":
+									print '<option name="newGame[pressType]" value="NoPress">Gunboat</option>';
+									break;
+							}
+						}
+					?>	
+				</select>
+			</div>
+
+			<!-- BOT FILL -->
+			<!-- bot stuff, not displayed yet. Appearance changed with game creation wizard -->
+			<!-- assuming this only works with classic? -->
+			<div id="botFill" style="display: none;">
+				<h2 class="game-create-title">Fill Open Spots With Bots</h2>
+				<p class="game-create-p">
+					If this option is selected, any empty spots in your game at the designated start time will fill with bots instead 
+					of being cancelled. This type of game will default to a 5 point bet, unranked scoring, and fully anonymous regardless 
+					of what settings you have chosen for the game. However, if your game fills completely with humans, your game will 
+					run with the settings that you choose just like any other.
+				</p>
+				<strong>Check the box to fill empty spots with bots:</strong>
+				<input type="checkbox" id="botBox" class="gameCreate" name="newGame[botFill]" value="Yes">
+				</br></br>
+			</div>
+
+			<!-- ANONYMITY -->
+			<!-- if gunboat, do not show; default to anon -->
+			<div class="game-create-anon">
+				<h2 class="game-create-title">Anonymity</h2>
+				<p class="game-create-p">
+					Some players prefer to play anonymous games, meaning that the names of other players in the game are not shown 
+					until after the game has concluded. A non-anonymous game allows everyone to see who is playing which country. 
+					By default, non-anonymous is highlighted for you.
+				</p>
+				<strong>Should players in your game be anonymous?</strong>
+				<select class="gameCreate" name="newGame[anon]">
+					<option name="newGame[anon]" value="No" selected>No</option>
+					<option name="newGame[anon]" value="Yes">Yes</option>
+				</select>
+			</div>
+
+			<!-- DRAW TYPE -->
+			<div class="game-create-draw-type">
+				<h2 class="game-create-title">Draw Votes</h2>
+				<p class="game-create-p">
+					Many players prefer to have their draw votes hidden so that other players do not know when they are or are not 
+					voting to draw a game. It is also traditional not to openly share who is or is not voting to draw in face-to-face 
+					Diplomacy. However, the highlighted default is to show all draw votes openly so that everyone knows when 
+					another player is or is not voting to draw.
+				</p>
+				<strong>Do you want to show or hide draw votes?</strong>
+				<select class="gameCreate" name="newGame[drawType]">
+					<option name="newGame[drawType]" value="draw-votes-public" selected>Show draw votes</option>
 					<option name="newGame[drawType]" value="draw-votes-hidden">Hide draw votes</option>
 				</select>
-			</p>
+			</div>
 
-			<p>
+			<!-- RELIABILITY AND CIVIL DISORDERS -->
+			<div class="game-create-rr-cds">
+				<h2 class="game-create-title">Reliability Rating and Civil Disorders</h2>
+				<p class="game-create-p">
+					Reliability is extremely important in Diplomacy because missing deadlines causes delays, which can break down 
+					relationships between players and cause fatigue. You can set a minimum reliability rating required to join your
+					game. You can read more about reliability <a href="intro.php#RR">here</a>.
+				</p>
 				<strong>Required reliability rating:</strong></br>
-				<input id="minRating" class = "gameCreate" type="text" name="newGame[minimumReliabilityRating]" size="2" value="<?php print $defaultRR ?>"
-					onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
-					onChange="
+				<input id="minRating" class="gameCreate" type="text" name="newGame[minimumReliabilityRating]" size="2" 
+				value="<?php print $defaultRR ?>" onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13" 
+				onChange="
 						this.value = parseInt(this.value);
 						if (this.value == 'NaN' ) this.value = 0;
 						if (this.value < 0 ) this.value = 0;
-						if (this.value > <?php print $maxRR ?> ) this.value = <?php print $User->reliabilityRating ?>;"/>
-			</p>
-
-			<strong>Excused delays per player:</strong>
-			<img id = "modBtnDelays" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="delayModal" class="modal">
-				<!-- Modal content -->
-				<div class="modal-content">
-					<span class="close1">&times;</span>
-					<p><strong>Excused delays per player:</strong></br>
-						The number of excused delays before a player is removed from the game and can be replaced. 
-						If a player is missing orders at a deadline, the deadline will reset and the player will be 
-						charged 1 excused delay. If they are out of excuses they will go into Civil Disorder.
-						The game will only progress with missing orders if no replacement is found within one phase of a player being forced into Civil Disorder. 
-						Set this value low to prevent delays to your game, set it higher to be more forgiving to people who might need occasional delays.
-					</p>
-				</div>
+						if (this.value > <?php print $maxRR ?> ) this.value = <?php print $User->reliabilityRating ?>;" 
+				/>
+				<br><br>
+				<p class="game-create-p">
+					Civil disorder takes place when a country has been abandoned by its player. You can determine how many times 
+					a player can miss a deadline before they are removed from the game. If a player with delays remaining misses 
+					the deadline, the deadline will reset and the player will be charged 1 delay. If they are out of delays, 
+					their country will enter civil disorder. The game will only progress with missing orders if no replacement 
+					is found within one phase of that country entering civil disorder.
+					<br><br>
+					You can give players in your game up to 4 delays before they enter civil disorder. Set this value low to 
+					prevent delays in your game. Set it higher to be more forgiving to people that may need a delay every so often.
+				</p>
+				<select class="gameCreate" id="NMR" name="newGame[excusedMissedTurns]">
+					<?php
+					for ($i = 0; $i <= 4; $i++) {
+						print '<option value="' . $i . '"' . ($i == 1 ? ' selected' : '') . '>' . $i . (($i == 0) ? ' (strict)' : '') . '</option>';
+					}
+					?>
+				</select>
 			</div>
-			<select class = "gameCreate" id="NMR" name="newGame[excusedMissedTurns]">
-			<?php
-				for ($i=0; $i<=4; $i++) { print '<option value="'.$i.'"'.($i==1 ? ' selected' : '').'>'.$i.(($i==0)?' (strict)':'').'</option>'; }
-			?>
-			</select>
-
-			<p>
-				<img src="images/icons/lock.png" alt="Private" /> <strong>Add Invite Code (optional):</strong></br>
-				<input class = "gameCreate" type="password"autocomplete="new-password" name="newGame[password]" value="" size="20" /></br>
-				Confirm: <input class = "gameCreate" autocomplete="new-password" type="password" name="newGame[passwordcheck]" value="" size="20" /></br>
-			</p>
+			
+			<!-- if private game -->
+			<div class="game-create-invite">
+				<h2 class="game-create-title">Private Invite Code</h2>
+				<p>
+					<img src="images/icons/lock.png" alt="Private" /> 
+					<strong>Add Invite Code:</strong>
+					</br>
+					<input class="gameCreate" type="password" autocomplete="new-password" name="newGame[password]" value="" size="20" /></br>
+					<br>
+					<strong>Confirm:</strong>
+					<input class="gameCreate" autocomplete="new-password" type="password" name="newGame[passwordcheck]" value="" size="20" /></br>
+				</p>
+				<!-- logic that this cannot be blank if private game? -->
+			</div>
 
 			<p class="notice">
-				<input class = "green-Submit" type="submit"  value="Create">
+				<input class="green-Submit" type="submit" value="Create">
 			</p>
 			</br>
 		</form>
 	</div>
-
-<script>
-// Get the modal
-var modal1 = document.getElementById('delayModal');
-var modal2 = document.getElementById('scoringModal');
-var modal3 = document.getElementById('variantModal');
-var modal4 = document.getElementById('phaseLengthModal');
-var modal5 = document.getElementById('betModal');
-var modal6 = document.getElementById('anonModal');
-var modal7 = document.getElementById('messagingModal');
-var modal8 = document.getElementById('botModal');
-
-// Get the button that opens the modal
-var btn1 = document.getElementById("modBtnDelays");
-var btn2 = document.getElementById("modBtnScoring");
-var btn3 = document.getElementById("modBtnVariant");
-var btn4 = document.getElementById("modBtnPhaseLength");
-var btn5 = document.getElementById("modBtnBet");
-var btn6 = document.getElementById("modBtnAnon");
-var btn7 = document.getElementById("modBtnMessaging");
-var btn8 = document.getElementById("modBtnBot");
-
-// Get the <span> element that closes the modal
-var span1 = document.getElementsByClassName("close1")[0];
-var span2 = document.getElementsByClassName("close2")[0];
-var span3 = document.getElementsByClassName("close3")[0];
-var span4 = document.getElementsByClassName("close4")[0];
-var span5 = document.getElementsByClassName("close5")[0];
-var span6 = document.getElementsByClassName("close6")[0];
-var span7 = document.getElementsByClassName("close7")[0];
-var span8 = document.getElementsByClassName("close8")[0];
-
-// When the user clicks the button, open the modal 
-btn1.onclick = function() { modal1.style.display = "block"; }
-btn2.onclick = function() { modal2.style.display = "block"; }
-btn3.onclick = function() { modal3.style.display = "block"; }
-btn4.onclick = function() { modal4.style.display = "block"; }
-btn5.onclick = function() { modal5.style.display = "block"; }
-btn6.onclick = function() { modal6.style.display = "block"; }
-btn7.onclick = function() { modal7.style.display = "block"; }
-btn8.onclick = function() { modal8.style.display = "block"; }
-
-// When the user clicks on <span> (x), close the modal
-span1.onclick = function() { modal1.style.display = "none"; }
-span2.onclick = function() { modal2.style.display = "none"; }
-span3.onclick = function() { modal3.style.display = "none"; }
-span4.onclick = function() { modal4.style.display = "none"; }
-span5.onclick = function() { modal5.style.display = "none"; }
-span6.onclick = function() { modal6.style.display = "none"; }
-span7.onclick = function() { modal7.style.display = "none"; }
-span8.onclick = function() { modal8.style.display = "none"; }
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-	if (event.target == modal1) { modal1.style.display = "none"; }
-	if (event.target == modal2) { modal2.style.display = "none"; }
-	if (event.target == modal3) { modal3.style.display = "none"; }
-	if (event.target == modal4) { modal4.style.display = "none"; }
-	if (event.target == modal5) { modal5.style.display = "none"; }
-	if (event.target == modal6) { modal6.style.display = "none"; }
-	if (event.target == modal7) { modal7.style.display = "none"; }
-	if (event.target == modal8) { modal8.style.display = "none"; }
-}
-
-function setBotFill(){
-	content = document.getElementById("botFill");
-
-	ePress = document.getElementById("pressType");
-	pressType = ePress.options[ePress.selectedIndex].value;
-
-	eVariant = document.getElementById("variant");
-	variant = eVariant.options[eVariant.selectedIndex].value;
-
-	if (pressType == "NoPress" && variant == 1){
-		content.style.display = "block";
-	}
-	else{
-		content.style.display = "none";
-		document.getElementById("botBox").checked = false;
-	}
-}
-
-// Display nextPhaseMinutes paragraph only if phaseSwitchPeriod has selected a period.
-nextPhaseMinutesPara = document.getElementById("nextPhaseMinutesPara");
-
-selectPhaseSwitchPeriod = document.getElementById("selectPhaseSwitchPeriod");
-phaseSwitchPeriodPara = document.getElementById("phaseSwitchPeriodPara");
-
-selectPhaseMinutes = document.getElementById("selectPhaseMinutes");
-
-nextPhaseMinutesPara.style.display = "none";
-phaseSwitchPeriodPara.style.display = "none";
-
-
-function updatePhasePeriod(){
-	if (selectPhaseMinutes.value > 60){
-		phaseSwitchPeriodPara.style.display = "none";
-		nextPhaseMinutesPara.style.display = "none";
-	}
-	else{
-		phaseSwitchPeriodPara.style.display = "block";
-		
-		if (selectPhaseSwitchPeriod.value == -1){	
-		nextPhaseMinutesPara.style.display = "none";
-		}
-		else{
-		nextPhaseMinutesPara.style.display = "block";
-		}
-	}
-
-
-	var phaseLength = parseInt(selectPhaseMinutes.value);
-
-
-	for (i = 0; i < selectPhaseSwitchPeriod.length; i++){
-		var optVal = parseInt(selectPhaseSwitchPeriod.options[i].value);
-		if (optVal <= 0 || optVal > phaseLength){
-			selectPhaseSwitchPeriod.options[i].hidden = false;
-			selectPhaseSwitchPeriod.options[i].disabled = false;
-		}
-		else{
-			selectPhaseSwitchPeriod.options[i].hidden = true;
-			selectPhaseSwitchPeriod.options[i].disabled = true;
-		}
-	}
-}
-
-
-
-
-selectPhaseSwitchPeriod.addEventListener("change", updatePhasePeriod)
-selectPhaseMinutes.addEventListener("change", updatePhasePeriod)
-
-</script>
+</div>
