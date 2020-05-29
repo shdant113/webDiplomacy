@@ -1051,6 +1051,8 @@ input[type=submit].login:hover {
 /* End section for Login and Password Recovery styling */
 
 /* Section for Game Create styling */
+
+/* used on bot form */
 .gameCreateShow {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -1059,36 +1061,6 @@ input[type=submit].login:hover {
 	font-size: 14px;
 	padding: 0px 10px 10px 10px;
 	margin-top:0px !important;
-}
-.gameCreateTitle {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #777;
-	color: white;
-	cursor: pointer;
-	padding: 10px;
-	border: none;
-	text-align: left;
-	outline: none;
-	border-radius: 7px;
-	margin-top: 3px;
-	font-size: 14px;
-}
-
-.gameCreateTitle:hover {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #555;
-}
-
-.gameCreateContent {
-	padding: 0;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	display: none;
-	overflow: hidden;
-	background-color: #f1f1f1;
-	margin-top: 0px !important;
-	font-size: 14px;
-	border-radius: 7px;
-	padding: 0 0 0 10px;
 }
 
 input[type=text].gameCreate, input[type=password].gameCreate, input[type=number].gameCreate, select.gameCreate {
@@ -1116,6 +1088,21 @@ input[type=submit].gameCreate:hover {
   background-color: #45a049;
 }
 
+.game-create-section {
+	display: none;
+}
+
+.game-create-buttons {
+	margin-top: 14px;
+	display: flex;
+	justify-content: space-around;
+}
+
+.game-create-question, .game-create-title {
+	text-align: center;
+}
+
+/* get rid of all this from here ...... */
 /* The Modal (background) */
 .modal {
   display: none; /* Hidden by default */
@@ -1156,6 +1143,7 @@ input[type=submit].gameCreate:hover {
   text-decoration: none;
   cursor: pointer;
 }
+/* ....... to here */
 /* End section for Game Create styling */
 
 /* Section for Tournament styling */
