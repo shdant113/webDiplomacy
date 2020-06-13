@@ -1088,7 +1088,7 @@ input[type=submit].gameCreate:hover {
   background-color: #45a049;
 }
 
-.game-create-section {
+.game-create-section, .game-create-error, .game-create-back-reset-container {
 	display: none;
 }
 
@@ -1100,6 +1100,24 @@ input[type=submit].gameCreate:hover {
 
 .game-create-question, .game-create-title {
 	text-align: center;
+}
+
+.game-create-back-reset {
+	display: flex;
+	justify-content: space-between;
+	margin: -10px 0 10px 0;
+}
+
+.game-create-error > p {
+	color: red;
+}
+
+.game-create-back-reset > div > h4 {
+	cursor: pointer;
+}
+
+.game-create-back-reset > div > h4:hover {
+	color: white;
 }
 
 /* get rid of all this from here ...... */
