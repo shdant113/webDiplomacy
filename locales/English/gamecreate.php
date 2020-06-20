@@ -26,12 +26,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  */
 ?>
 
-<!-- TO DO -->
-<!-- rebuild submit inputs as buttons w/ enter event func -->
-<!-- reconfigure existing validation with js instead of php -->
-<!-- customize? -->
-<!-- styles for things other than dark mode on desktop -->
-
 <div class="content-bare content-board-header content-title-header">
 	<div class="pageTitle barAlt1">Create a new Diplomacy game</div>
 	<div class="pageDescription">Start a new game of Diplomacy. Use preset defaults or customize it yourself.</div>
@@ -40,10 +34,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 <div class="content content-follow-on">
 	<div class="game-create-back-reset-container">
 		<div class="game-create-back-reset">
-			<div class="back" onclick="goBack()" tabindex="0">
+			<div class="back" onclick="goBack()" onkeydown="checkEvent('back')" tabindex="0">
 				<h4>Back</h4>
 			</div>
-			<div class="reset" onclick="reset()" tabindex="0">
+			<div class="reset" onclick="reset()" onkeydown="checkEvent('reset')" tabindex="0">
 				<h4>Reset</h4>
 			</div>
 		</div>
@@ -51,12 +45,9 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	</div>
 	<div class="game-create-outer-container">
 		<?php
-		// change this later or everything will be bad
 		if (isset(Config::$customForumURL)) {
 		?>
 			<!-- BOTS OR HUMANS -->
-			<!-- for bot games, link to botcreate.php or make a form here, which you also need to fix up -->
-			<!-- this will actually load up one form or the other when this is done -->
 			<div class="game-create-bothuman game-create-section">
 				<h2 class="game-create-title">Play Bots or Humans?</h2>
 				<p class="game-create-p">
@@ -70,7 +61,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					</strong>
 				</div>
 				<div class="game-create-buttons">
-					<a href="botcreate.php"><input class="form-submit" value="Bots" /></a>
+					<a href="botgamecreate.php"><input class="form-submit" value="Bots" /></a>
 					<input class="form-submit" value="Humans" onClick="showNext('game-create-bothuman', 'game-create-private')" />
 				</div>
 			</div>
@@ -429,8 +420,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					<strong>
 						Which press style would you like your game to be?
 					</strong>
-					<!-- when botfill goes live use this: -->
-					<!-- <select class="gameCreate" id="pressType" name="newGame[pressType]" onchange="setBotFill()"> -->
 					<select class="gameCreate" id="pressType" name="newGame[pressType]" onkeydown="checkEvent('press')">
 						<?php
 						$pressTypes = array("Regular", "PublicPressOnly", "NoPress", "RulebookPress");
@@ -463,7 +452,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 			<!-- BOT FILL -->
 			<!-- bot stuff, not displayed yet. Usage will have to change with game creation wizard -->
-			<!-- assuming this only works with classic? -->
 			<div id="botFill" class="game-create-bot-fill game-create-section">
 				<h2 class="game-create-title">Fill Open Spots With Bots</h2>
 				<p class="game-create-p">
@@ -563,12 +551,12 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					<br>
 
 					<!-- will show button to create game if public game -->
-					<div class="notice game-create-submit game-create-section">
-						<input id="cd-create" class="green-Submit" type="submit" value="Create Your Game">
+					<div class="notice game-create-submit game-create-buttons game-create-section" id="cd-create">
+						<input class="green-Submit" type="submit" value="Create Your Game" id="cd-create-button">
 					</div>
 
 					<!-- will show button to move to invite code input if private game -->
-					<div class="game-create-buttons game-create-section">
+					<div class="game-create-buttons game-create-section" id="cd-button">
 						<input class="form-submit" value="Submit" onClick="showNext('game-create-cds', 'game-create-invite')" />
 					</div>
 				</div>
@@ -594,13 +582,12 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 						<input class="gameCreate" autocomplete="new-password" type="password" name="newGame[passwordcheck]" value="" size="20" /></br>
 					</div>
 					<br>
-					<div class="notice game-create-submit">
+					<div class="notice game-create-submit game-create-buttons">
 						<input class="green-Submit" type="submit" value="Create Your Game">
 					</div>
 				</div>
 			</div>
 
-			<!-- do some sort of review of settings? -->
 		</form>
 	</div>
 </div>

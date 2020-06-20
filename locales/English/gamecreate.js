@@ -55,7 +55,7 @@ function showNext(hide, show) {
 
     document.getElementsByClassName(hide)[0].style.display = "none";
     document.getElementsByClassName(show)[0].style.display = "block";
-
+    
     roadmap.push(show);
 }
 
@@ -134,9 +134,18 @@ function checkEvent(component = "", input = "") {
                 if (private) {
                     showNext("game-create-cds", "game-create-invite");
                 } else {
-                    console.log('focusing')
-                    document.getElementById("cd-create").focus();
+                    document.getElementById("cd-create-button").focus();
                 }
+                break;
+
+            case "back":
+                e.preventDefault();
+                goBack();
+                break;
+
+            case "reset":
+                e.preventDefault();
+                reset();
                 break;
         }
     }
@@ -150,7 +159,9 @@ function reset() {
     document.getElementsByClassName(current)[0].style.display = "none";
     document.getElementsByClassName("game-create-back-reset-container")[0].style.display = "none";
 
+    roadmap = [""];
     private = false;
+
     load();
 }
 
@@ -161,6 +172,13 @@ function goBack() {
 
     if (current == "game-create-private" && private) {
         private = false;
+    }
+
+    if (
+        (document.getElementsByClassName("game-create-bothuman")[0] && previous == "game-create-bothuman") ||
+        (!document.getElementsByClassName("game-create-bothuman")[0] && previous == "game-create-private")
+    ) {
+        document.getElementsByClassName("game-create-back-reset-container")[0].style.display = "none";
     }
 
     document.getElementsByClassName(current)[0].style.display = "none";
@@ -277,7 +295,9 @@ function validateReliability(rating) {
         }
         if (!private) {
             document.getElementsByClassName("game-create-submit")[0].style.display = "block";
+            document.getElementById("cd-button").style.display = "none";
         } else {
+            document.getElementById("cd-create").style.display = "none";
             document.getElementById("cd-button").style.display = "block";
         }
         showNext("game-create-rr", "game-create-cds");
