@@ -1113,16 +1113,39 @@ input[type=submit].gameCreate:hover {
 	margin: -10px 0 10px 0;
 }
 
-.game-create-error > p {
+.game-create-error > .game-create-p {
+	margin-top: 14px;
 	color: red;
 }
 
-.game-create-back-reset > div > h4 {
+.game-create-back-reset > div > h4, .game-create-review-edit, #title-box:hover {
 	cursor: pointer;
 }
 
 .game-create-back-reset > div > h4:hover {
 	color: #006699;
+}
+
+.game-create-review-section {
+	display: flex;
+	justify-content: space-between;
+}
+
+.game-create-review-edit:hover {
+	color: #45a049;
+}
+
+.game-create-button {
+	width: 20%;
+	min-width: 100px;
+}
+
+.game-create-margin {
+	margin-top: 14px;
+}
+
+.game-create-container {
+	min-height: 250px;
 }
 
 /* End section for Game Create styling */

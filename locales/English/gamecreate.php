@@ -26,18 +26,27 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  */
 ?>
 
+<!-- TO FIX -->
+<!-- enter on component submit should not create game -->
+
+<!-- TO DO -->
+<!-- make all inputs div class game-create-button, tabindex them, onkeydown/onclick -->
+<!-- style review page -->
+<!-- customize instructions/text, improve accessibility by shortening instruction text and linking to other pages -->
+<!-- make all links to other pages open a new tab so user does not lose their game if they click them -->
+
 <div class="content-bare content-board-header content-title-header">
 	<div class="pageTitle barAlt1">Create a new Diplomacy game</div>
 	<div class="pageDescription">Start a new game of Diplomacy. Use preset defaults or customize it yourself.</div>
 </div>
 
-<div class="content content-follow-on">
+<div class="content content-follow-on game-create-container">
 	<div class="game-create-back-reset-container">
 		<div class="game-create-back-reset">
-			<div class="back" onclick="goBack()" onkeydown="checkEvent('back')" tabindex="0">
+			<div class="back" onclick="goBack()" onkeydown="goBack()" tabindex="0">
 				<h4>Back</h4>
 			</div>
-			<div class="reset" onclick="reset()" onkeydown="checkEvent('reset')" tabindex="0">
+			<div class="reset" onclick="reset()" onkeydown="reset()" tabindex="0">
 				<h4>Reset</h4>
 			</div>
 		</div>
@@ -52,7 +61,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<h2 class="game-create-title">Play Bots or Humans?</h2>
 				<p class="game-create-p">
 					webDiplomacy is the first online Diplomacy site to feature gameplay against true artificial intelligence,
-					trained on the decisions that real people made in countless situations over thousands of games. You can play
+					trained by the decisions that real people made in countless situations over thousands of games. You can play
 					against our artificial intelligence bots, or you can play a game against real people.
 				</p>
 				<div class="game-create-question">
@@ -61,8 +70,16 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					</strong>
 				</div>
 				<div class="game-create-buttons">
-					<a href="botgamecreate.php"><input class="form-submit" value="Bots" /></a>
-					<input class="form-submit" value="Humans" onClick="showNext('game-create-bothuman', 'game-create-private')" />
+					<div 
+						tabindex="0" class="game-create-button form-submit"
+						onclick="redirectToBots()"
+						onkeydown="redirectToBots()"
+					>Bots</div>
+					<div 
+						tabindex="0" class="game-create-button form-submit"
+						onclick="showNext('game-create-bothuman', 'game-create-private')"
+						onkeydown="showNext('game-create-bothuman', 'game-create-private')"
+					>Humans</div>
 				</div>
 			</div>
 		<?php
@@ -77,22 +94,30 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<h2 class="game-create-title">Public or Private Game?</h2>
 				<p class="game-create-p">
 					If you are playing against family, friends, coworkers, or other people that you know from outside of webDiplomacy,
-					we ask that you play a private game. Your game will be locked with a password so that people who you do not know
-					do not accidentally join your game. That way, you can play without worrying about <a class="light" href="rules.php">metagaming</a>
-					or violating any of our other <a class="light" href="rules.php">rules</a> on playing with people that you know. You can also use
-					a private game to invite certain players that you want to play with if this is a tournament or special game that
-					only certain people should join.
+					we ask that you play a private game. Your game will be protected with a password so that people who you do not know
+					do not accidentally join your game. That way, you can play without worrying about violating any of our 
+					<a class="light" href="rules.php">rules</a> on playing with people that you know. You can also use a private game to 
+					invite certain players that you want to play with if this is a tournament or special game that only certain people should join.
 					<br><br>
-					If this is a private game, you will be prompted to enter a password for the game at the end of this form.
 					If none of that applies to you, you can create a public game and it will be open for anyone to join.
+					If the above does apply to you, you can create a private game. You will be prompted to enter a password for the game 
+					at the end of this form.
 				</p>
 				<div class="game-create-question">
 					<strong>
 						Do you want to play a private game or public game?
 					</strong>
 					<div class="game-create-buttons">
-						<input class="form-submit" value="Private" onClick="isPrivate(true)" />
-						<input class="form-submit" value="Public" onClick="isPrivate(false)" />
+						<div 
+							tabindex="0" class="game-create-button form-submit"
+							onclick="showNext('game-create-private', 'game-create-name', 'invite')" 
+							onkeydown="showNext('game-create-private', 'game-create-name', 'invite')" 
+						>Private</div>
+						<div 
+							tabindex="0" class="game-create-button form-submit" 
+							onclick="showNext('game-create-private', 'game-create-name')"
+							onkeydown="showNext('game-create-private', 'game-create-name')"
+						>Public</div>
 					</div>
 				</div>
 			</div>
@@ -100,15 +125,25 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			<!-- GAME NAME -->
 			<div class="game-create-name game-create-section">
 				<h2 class="game-create-title ">Game Title</h2>
-				<p class="game-create-p">As the creator of a new game, you get to give it a title.</p>
+				<p class="game-create-p">
+					As the creator of a new game, you get to give it a title. The title of your game can be anything that 
+					you like, but please keep it appropriate. 
+				</p>
 				<div class="game-create-question">
 					<strong>What do you want the title of your new game to be?</strong>
 					<div class="game-create-error" id="title-error">
-						<p class="game-create-p">Your game must have a title.</p>
+						<div class="game-create-p">Your game must have a title.</div>
 					</div>
-					<input class="gameCreate" id="title-box" type="text" name="newGame[name]" value="" size="30" onkeydown="checkEvent('title')" />
+					<input 
+						class="game-create-margin gameCreate" id="title-box" type="text" name="newGame[name]" value="" size="30" 
+						onkeydown="showNext('game-create-name', 'game-create-variant', 'title')" 
+					/>
 					<div class="game-create-buttons">
-						<input class="form-submit" value="Submit" onclick="checkTitle()" />
+						<div 
+							tabindex="0" class="game-create-button form-submit" 
+							onclick="showNext('game-create-name', 'game-create-variant', 'title')"
+							onkeydown="showNext('game-create-name', 'game-create-variant', 'title')"
+						>Submit</div>
 					</div>
 				</div>
 			</div>
@@ -120,9 +155,9 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					webDiplomacy hosts a number of map choices to choose from. By default, the classic Diplomacy board,
 					the same one used in the Avalon Hill board game, is selected for you, and if you are new to the game
 					we recommend playing on it until you are more comfortable. The classic board requires 7 players and is
-					a representation of pre-WWI Europe. We have a number of other variant maps that you can select and you can
-					read about them all <a class="light" href="variants.php">here</a>, or check out one from the following list that you are
-					curious about to read more:
+					a representation of pre-WWI Europe. We have a number of other variant maps that you can select. You can
+					read about them all <a class="light" href="variants.php">here</a>, or check out one from the following list 
+					that you are curious about to read more:
 					<br><br>
 					<?php
 					foreach (Config::$variants as $variantID => $variantName) {
@@ -137,7 +172,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				</p>
 				<div class="game-create-question">
 					<strong>Which Diplomacy map do you want to play?</strong>
-					<select id="variant" class="gameCreate" name="newGame[variantID]" onchange="setBotFill()" onkeydown="checkEvent('variant')">
+					<select 
+						id="variant" class="game-create-margin gameCreate" name="newGame[variantID]" onchange="setBotFill()" 
+						onkeydown="showNext('game-create-variant', 'game-create-scoring', 'variant')"
+					>
 						<?php
 						$first = true;
 						foreach (Config::$variants as $variantID => $variantName) {
@@ -185,7 +223,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 						?>
 					</select>
 					<div class="game-create-buttons">
-						<input class="form-submit" value="Submit" onClick="check1v1()" />
+						<div 
+							tabindex="0" class="game-create-button form-submit" 
+							onclick="showNext('game-create-variant', 'game-create-scoring', 'variant')"
+							onkeydown="showNext('game-create-variant', 'game-create-scoring', 'variant')" 
+						>Submit</div>
 					</div>
 				</div>
 			</div>
@@ -194,14 +236,13 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			<div class="game-create-scoring game-create-section">
 				<h2 class="game-create-title">Scoring</h2>
 				<p class="game-create-p">
-					On webDiplomacy, games can be ranked or unranked. In a ranked game, you can lose your bet if your country is defeated,
-					or if someone else wins the game, and your Ghost Rating will be affected. However, in an unranked game, your bet will
-					be returned to you and your Ghost Rating will not be affected at all. In any ranked game, the winner will take the
-					entire pot. However, not every ranked game ends with one player winning. Most games end in a draw and this setting
-					will determine how points are split up if a game is eventually drawn.
+					Games can be ranked or unranked. In a ranked game, you can lose your bet if your country is defeated,
+					or if someone else wins the game, and your Ghost Rating will be affected, and you can win the entire pot if you win. 
+					In an unranked game, your bet will be returned to you and your Ghost Rating will not be affected at all. 
+					This setting allows you to choose an unranked game, or if you decide to choose a ranked game instead it will determine 
+					how points are split in the event of a draw.
 					<br><br>
 					In Draw-Size Scoring (DSS), the pot is split equally between the remaining players when the game draws.
-					The winner takes all the points.
 					<br><br>
 					In Sum-of-Squares Scoring (SoS), the pot is divided based on how many supply centers you control when the game is drawn.
 					<br><br>
@@ -212,7 +253,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				</p>
 				<div class="game-create-question">
 					<strong>Which scoring type do you choose for your game?</strong>
-					<select id="scoring" class="gameCreate" name="newGame[potType]" onkeydown="checkEvent('scoring')">
+					<select 
+						id="scoring" class="game-create-margin gameCreate" name="newGame[potType]" 
+						onkeydown="showNext('game-create-scoring', 'game-create-bet', 'scoring')" 
+					>
 						<?php
 						$type = array("Winner-takes-all", "Sum-of-squares", "Unranked");
 						foreach ($type as $t) {
@@ -233,7 +277,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 						?>
 					</select>
 					<div class="game-create-buttons">
-						<input class="form-submit" value="Submit" onClick="checkScoring()" />
+						<div 
+							tabindex="0" class="game-create-button form-submit"
+							onclick="showNext('game-create-scoring', 'game-create-bet', 'scoring')" 
+							onkeydown="showNext('game-create-scoring', 'game-create-bet', 'scoring')"
+						>Submit</div>
 					</div>
 				</div>
 			</div>
@@ -253,13 +301,18 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<div class="game-create-question">
 					<strong>How many points do you want to bet (5-<?php print $User->points . libHTML::points(); ?>)?</strong>
 					<div class="game-create-error" id="bet-error">
-						<p class="game-create-p">Your game must have a valid bet (5-<?php print $User->points . libHTML::points(); ?>).</p>
+						<div class="game-create-p">Your game must have a valid bet (5-<?php print $User->points . libHTML::points(); ?>).</div>
 					</div>
-					<input class="gameCreate" id="bet" type="text" name="newGame[bet]" size="7" value="<?php print $formPoints ?>" 
-						onkeydown="checkEvent('bet', <?php print $User->points?>)"
+					<input class="game-create-margin gameCreate" id="bet" type="text" name="newGame[bet]" size="7" 
+						value="<?php print $formPoints ?>" 
+						onkeydown="showNext('game-create-bet', 'game-create-phase-length', 'points', <?php print $User->points?>)"
 					/>
 					<div class="game-create-buttons">
-						<input class="form-submit" value="Submit" onClick="checkBet(<?php print $User->points?>)" />
+						<div 
+							tabindex="0" class="game-create-button form-submit"
+							onclick="showNext('game-create-bet', 'game-create-phase-length', 'points', <?php print $User->points?>)"
+							onkeydown="showNext('game-create-bet', 'game-create-phase-length', 'points', <?php print $User->points?>)"
+						>Submit</div>
 					</div>
 				</div>
 			</div>
@@ -269,18 +322,26 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<div class="game-create-phase-length game-create-section">
 					<h2 class="game-create-title">Phase Length</h2>
 					<p class="game-create-p">
-						The phase length determines how long each stage of the game will be. This will determine how long you spend
-						playing your game. If you choose a longer phase length, or a non-live game, the game will probably last
-						longer overall but require less consistent attention. For example, a game with a 7 day phase length may last
-						for up to a year, but you may only need to check on the game a couple times per week in order to send messages
-						and make sure your orders are submitted. On the other hand, a live game (game with a phase length of 30
-						minutes or less) will require constant attention but will likely end within a few hours.
+						The phase length determines how long each stage of the game will be. If you choose a longer phase length, 
+						or a non-live game, the game will probably last longer overall but require less consistent attention. 
+						For example, a game with a 7 day phase length may last for up to a year, but you may only need to check on 
+						the game a couple times per week in order to send messages and make sure your orders are submitted. 
+						On the other hand, a live game (game with a phase length of 30 minutes or less) will require constant 
+						attention but will likely end within a few hours.
 					</p>
 					<div class="game-create-question">
 						<strong>Do you want to play a live game or a non-live game?</strong>
 						<div class="game-create-buttons">
-							<input class="form-submit" value="Live" onClick="showNext('game-create-phase-length', 'game-create-live-open')" />
-							<input class="form-submit" value="Non-Live" onClick="showNext('game-create-phase-length', 'game-create-live-closed')" />
+							<div 
+								tabindex="0" class="game-create-button form-submit" 
+								onclick="showNext('game-create-phase-length', 'game-create-live-open', 'live')"
+								onkeydown="showNext('game-create-phase-length', 'game-create-live-open', 'live')"
+							>Live</div>
+							<div 
+								tabindex="0" class="game-create-button form-submit" 
+								onclick="showNext('game-create-phase-length', 'game-create-live-closed')"
+								onkeydown="showNext('game-create-phase-length', 'game-create-live-closed')"
+							>Non-Live</div>
 						</div>
 					</div>
 				</div>
@@ -290,7 +351,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					<h2 class="game-create-title">Phase Length</h2>
 					<div class="game-create-question">
 						<strong>Live games move quickly. How long do you want each phase to last?</strong>
-						<select class="gameCreate" name="newGame[phaseMinutes]" id="selectPhaseMinutesLive" onkeydown="checkEvent('livePhaseMinutes')">
+						<select 
+							class="game-create-margin gameCreate" name="newGame[phaseMinutes]" id="selectPhaseMinutesLive" 
+							onkeydown="showNext('game-create-live-open', 'game-create-phase-switch')"
+						>
 							<?php
 							$phaseList = array(5, 7, 10, 15, 20, 30);
 							foreach ($phaseList as $i) {
@@ -299,7 +363,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 							?>
 						</select>
 						<div class="game-create-buttons">
-							<input class="form-submit" value="Submit" onClick="showNext('game-create-live-open', 'game-create-phase-switch')" />
+							<div 
+								tabindex="0" class="game-create-button form-submit" 
+								onclick="showNext('game-create-live-open', 'game-create-phase-switch')" 
+								onkeydown="showNext('game-create-live-open', 'game-create-phase-switch')"
+							>Submit</div>
 						</div>
 					</div>
 				</div>
@@ -316,7 +384,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					</p>
 					<div class="game-create-question">
 						<strong>How long do you want to play before the phase length changes?</strong>
-						<select class="gameCreate" id="selectPhaseSwitchPeriod" name="newGame[phaseSwitchPeriod]" onkeydown="checkEvent('livePhaseSwitchMinutes')">
+						<select class="game-create-margin gameCreate" id="selectPhaseSwitchPeriod" name="newGame[phaseSwitchPeriod]" onkeydown="checkEvent('livePhaseSwitchMinutes')">
 							<?php
 							$phaseList = array(-1, 10, 15, 20, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360);
 							foreach ($phaseList as $i) {
@@ -329,7 +397,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 							?>
 						</select>
 						<div class="game-create-buttons">
-							<input class="form-submit" value="Submit" onClick="checkPhaseSwitch()" />
+							<div 
+								tabindex="0" class="game-create-button form-submit" 
+								onclick="showNext('game-create-phase-switch', 'game-create-time-fill', 'switch')"
+								onkeydown="showNext('game-create-phase-switch', 'game-create-time-fill', 'switch')"
+							>Submit</div>
 						</div>
 					</div>
 				</div>
@@ -337,7 +409,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					<h2 class="game-create-title">Phase Length</h2>
 					<div class="game-create-question">
 						<strong>How long should the phase length be when it changes?</strong>
-						<select class="gameCreate" id="selectNextPhaseMinutes" name="newGame[nextPhaseMinutes]" onkeydown="checkEvent('nextPhaseMinutes')">
+						<select 
+							class="game-create-margin gameCreate" id="selectNextPhaseMinutes" name="newGame[nextPhaseMinutes]" 
+							onkeydown="showNext('game-create-next-phase', 'game-create-time-fill')"
+						>
 							<?php
 							$phaseList = array(1440, 1440 + 60, 2160, 2880, 2880 + 60 * 2, 4320, 5760, 7200, 8640, 10080, 14400);
 							foreach ($phaseList as $i) {
@@ -346,7 +421,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 							?>
 						</select>
 						<div class="game-create-buttons">
-							<input class="form-submit" value="Submit" onClick="showNext('game-create-next-phase', 'game-create-time-fill')" />
+							<div 
+								tabindex="0" class="game-create-button form-submit" 
+								onclick="showNext('game-create-next-phase', 'game-create-time-fill')"
+								onkeydown="showNext('game-create-next-phase', 'game-create-time-fill')" 
+							>Submit</div>
 						</div>
 					</div>
 				</div>
@@ -358,7 +437,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 						<strong>
 							You can choose for your phase to last as long as 7 days or as little as 1 hour. How long do you want the phase to last?
 						</strong>
-						<select class="gameCreate" name="newGame[phaseMinutes]" id="selectPhaseMinutesNotLive" onkeydown="checkEvent('notLivePhaseMinutes')">
+						<select 
+							class="game-create-margin gameCreate" name="newGame[phaseMinutes]" id="selectPhaseMinutesNotLive"
+							onkeydown="showNext('game-create-live-closed', 'game-create-time-fill')"
+						>
 							<?php
 							$phaseList = array(
 								60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
@@ -370,7 +452,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 							?>
 						</select>
 						<div class="game-create-buttons">
-							<input class="form-submit" value="Submit" onClick="showNext('game-create-live-closed', 'game-create-time-fill')" />
+							<div
+								tabindex="0" class="game-create-button form-submit" 
+								onclick="showNext('game-create-live-closed', 'game-create-time-fill')"
+								onkeydown="showNext('game-create-live-closed', 'game-create-time-fill')" 
+							>Submit</div>
 						</div>
 					</div>
 				</div>
@@ -386,7 +472,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					</p>
 					<div class="game-create-question">
 						<strong>How long can it take to fill your game before it is canceled?</strong></br>
-						<select class="gameCreate" id="wait" name="newGame[joinPeriod]" onkeydown="checkEvent('timeFill')">
+						<select 
+							class="game-create-margin gameCreate" id="wait" name="newGame[joinPeriod]" 
+							onkeydown="showNext('game-create-time-fill', 'game-create-messaging')"
+						>
 							<?php
 							$phaseList = array(
 								5, 7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
@@ -398,7 +487,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 							?>
 						</select>
 						<div class="game-create-buttons">
-							<input class="form-submit" value="Submit" onClick="showNext('game-create-time-fill', 'game-create-messaging')" />
+							<div 
+								tabindex="0" class="game-create-button form-submit" 
+								onclick="showNext('game-create-time-fill', 'game-create-messaging')" 
+								onkeydown="showNext('game-create-time-fill', 'game-create-messaging')"
+							>Submit</div>
 						</div>
 					</div>
 				</div>
@@ -420,7 +513,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					<strong>
 						Which press style would you like your game to be?
 					</strong>
-					<select class="gameCreate" id="pressType" name="newGame[pressType]" onkeydown="checkEvent('press')">
+					<select 
+						class="game-create-margin gameCreate" id="pressType" name="newGame[pressType]" 
+						onkeydown="showNext('game-create-messaging', 'game-create-anon', 'gunboat')" 
+					>
 						<?php
 						$pressTypes = array("Regular", "PublicPressOnly", "NoPress", "RulebookPress");
 						foreach ($pressTypes as $type) {
@@ -445,14 +541,18 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 						?>
 					</select>
 					<div class="game-create-buttons">
-						<input class="form-submit" value="Submit" onClick="checkPressType()" />
+						<div 
+							tabindex="0" class="game-create-button form-submit" 
+							onclick="showNext('game-create-messaging', 'game-create-anon', 'gunboat')" 
+							onkeydown="showNext('game-create-messaging', 'game-create-anon', 'gunboat')" 
+						>Submit</div>
 					</div>
 				</div>
 			</div>
 
 			<!-- BOT FILL -->
 			<!-- bot stuff, not displayed yet. Usage will have to change with game creation wizard -->
-			<div id="botFill" class="game-create-bot-fill game-create-section">
+			<!-- <div id="botFill" class="game-create-bot-fill game-create-section">
 				<h2 class="game-create-title">Fill Open Spots With Bots</h2>
 				<p class="game-create-p">
 					If this option is selected, any empty spots in your game at the designated start time will fill with bots instead
@@ -463,7 +563,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<strong>Check the box to fill empty spots with bots:</strong>
 				<input type="checkbox" id="botBox" class="gameCreate" name="newGame[botFill]" value="Yes">
 				</br></br>
-			</div>
+			</div> -->
 
 			<!-- ANONYMITY -->
 			<div class="game-create-anon game-create-section">
@@ -475,12 +575,19 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				</p>
 				<div class="game-create-question">
 					<strong>Should players in your game be anonymous?</strong>
-					<select class="gameCreate" name="newGame[anon]" onkeydown="checkEvent('anon')">
+					<select 
+						class="game-create-margin gameCreate" id="game-create-anon" name="newGame[anon]" 
+						onkeydown="showNext('game-create-anon', 'game-create-draw-type')"
+					>
 						<option name="newGame[anon]" value="No" selected>No</option>
 						<option name="newGame[anon]" value="Yes">Yes</option>
 					</select>
 					<div class="game-create-buttons">
-						<input class="form-submit" value="Submit" onClick="showNext('game-create-anon', 'game-create-draw-type')" />
+						<div 
+							tabindex="0" class="game-create-button form-submit" 
+							onclick="showNext('game-create-anon', 'game-create-draw-type')" 
+							onkeydown="showNext('game-create-anon', 'game-create-draw-type')"
+						>Submit</div>
 					</div>
 				</div>
 			</div>
@@ -496,12 +603,19 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				</p>
 				<div class="game-create-question">
 					<strong>Do you want to show or hide draw votes?</strong>
-					<select class="gameCreate" name="newGame[drawType]" onkeydown="checkEvent('draw')">
+					<select 
+						class="game-create-margin gameCreate" id="game-create-draw" name="newGame[drawType]" 
+						onkeydown="showNext('game-create-draw-type', 'game-create-rr')"
+					>
 						<option name="newGame[drawType]" value="draw-votes-public" selected>Show draw votes</option>
 						<option name="newGame[drawType]" value="draw-votes-hidden">Hide draw votes</option>
 					</select>
 					<div class="game-create-buttons">
-						<input class="form-submit" value="Submit" onClick="showNext('game-create-draw-type', 'game-create-rr');" />
+						<div 
+							tabindex="0" class="game-create-button form-submit"
+							onclick="showNext('game-create-draw-type', 'game-create-rr')"
+							onkeydown=onclick="showNext('game-create-draw-type', 'game-create-rr')" 
+						>Submit</div>
 					</div>
 				</div>
 			</div>
@@ -517,12 +631,19 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<div class="game-create-question">
 					<strong>Required reliability rating (0-<?php print $User->reliabilityRating?>):</strong></br>
 					<div class="game-create-error" id="rr-error">
-						<p class="game-create-p">Your given reliability rating must fall between 0 and <?php print $User->reliabilityRating?>.</p>
+						<div class="game-create-p">Your given reliability rating must fall between 0 and <?php print $User->reliabilityRating?>.</div>
 					</div>
-					<input id="minRating" class="gameCreate" type="text" name="newGame[minimumReliabilityRating]" size="2" 
-					value="<?php print $defaultRR ?>" onkeydown="checkEvent('rr', <?php print $User->reliabilityRating?>)" />
+					<input 
+						id="minRating" class="game-create-margin gameCreate" type="text" name="newGame[minimumReliabilityRating]" size="2" 
+						value="<?php print $defaultRR ?>" 
+						onkeydown="showNext('game-create-rr', 'game-create-cds', 'rr', <?php print $User->reliabilityRating?>)" 
+					/>
 					<div class="game-create-buttons">
-						<input class="form-submit" value="Submit" onClick="validateReliability(<?php print $User->reliabilityRating ?>)" />
+						<div 
+							tabindex="0" class="game-create-button form-submit" 
+							onclick="showNext('game-create-rr', 'game-create-cds', 'rr', <?php print $User->reliabilityRating?>)" 
+							onkeydown="showNext('game-create-rr', 'game-create-cds', 'rr', <?php print $User->reliabilityRating?>)"
+						>Submit</div>
 					</div>
 				</div>
 			</div>
@@ -541,7 +662,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					prevent delays in your game. Set it higher to be more forgiving to people that may need a delay every so often.
 				</p>
 				<div class="game-create-question">
-					<select class="gameCreate" id="NMR" name="newGame[excusedMissedTurns]" onkeydown="checkEvent('cd')">
+					<select 
+						class="gameCreate" id="NMR" name="newGame[excusedMissedTurns]" 
+						onkeydown="showNext('game-create-cds', 'game-create-review', 'cds')" 
+					>
 						<?php
 						for ($i = 0; $i <= 4; $i++) {
 							print '<option value="' . $i . '"' . ($i == 1 ? ' selected' : '') . '>' . $i . (($i == 0) ? ' (strict)' : '') . '</option>';
@@ -549,15 +673,12 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 						?>
 					</select>
 					<br>
-
-					<!-- will show button to create game if public game -->
-					<div class="notice game-create-submit game-create-buttons game-create-section" id="cd-create">
-						<input class="green-Submit" type="submit" value="Create Your Game" id="cd-create-button">
-					</div>
-
-					<!-- will show button to move to invite code input if private game -->
-					<div class="game-create-buttons game-create-section" id="cd-button">
-						<input class="form-submit" value="Submit" onClick="showNext('game-create-cds', 'game-create-invite')" />
+					<div class="game-create-buttons game-create-section" id="cd-public">
+						<div 
+							tabindex="0" class="game-create-button form-submit"
+							onclick="showNext('game-create-cds', 'game-create-review', 'cds')" 
+							onkeydown="showNext('game-create-cds', 'game-create-review', 'cds')" 
+						>Submit</div>
 					</div>
 				</div>
 			</div>
@@ -572,21 +693,161 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					to join your game. Without this code, they will not be able to join, so do not forget it!
 				</p>
 				<div class="game-create-question">
-					<div>
+					<div class="game-create-error" id="invite-error">
+						<div class="game-create-p">You must enter a valid invite code.</div>
+					</div>
+					<div class="game-create-error" id="invite-error-match">
+						<div class="game-create-p">Your invite codes do not match.</div>
+					</div>
+					<div class="game-create-margin">
 						<img src="images/icons/lock.png" alt="Private" />
 						<strong>Add Invite Code:</strong>
 						</br>
-						<input class="gameCreate" type="password" autocomplete="new-password" name="newGame[password]" value="" size="20" /></br>
+						<input 
+							class="game-create-margin gameCreate" type="password" autocomplete="new-password" 
+							name="newGame[password]" value="" size="20" id="invite-input" 
+						/></br>
 						<br>
 						<strong>Confirm:</strong>
-						<input class="gameCreate" autocomplete="new-password" type="password" name="newGame[passwordcheck]" value="" size="20" /></br>
+						<input 
+							class="game-create-margin gameCreate" autocomplete="new-password" type="password" 
+							name="newGame[passwordcheck]" value="" size="20" id="invite-conf-input" 
+							onkeydown="showNext('game-create-invite', 'game-create-review', 'code')"
+						/></br>
 					</div>
-					<br>
-					<div class="notice game-create-submit game-create-buttons">
-						<input class="green-Submit" type="submit" value="Create Your Game">
+					<div class="game-create-buttons game-create-section">
+						<div 
+							tabindex="0" class="game-create-button form-submit" 
+							onclick="showNext('game-create-invite', 'game-create-review', 'code')"
+							onkeydown="showNext('game-create-invite', 'game-create-review', 'code')"
+						>Submit</div>
 					</div>
 				</div>
 			</div>
+
+			<!-- settings review -->
+			<div class="game-create-review game-create-section">
+				<h2 class="game-create-title">Review</h2>
+				<p class="game-create-p">
+					Review the settings you have chosen for your game.
+				</p>
+
+				<div class="game-create-review-section">
+					<span>
+						<strong>Game name: </strong><span id="game-create-review-name"></span>
+					</span>
+					<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review', 'game-create-name')" onkeydown="editForm('')">Edit</span>
+				</div>
+				
+				<div class="game-create-review-section">
+					<span>
+						<strong>Map choice: </strong><span id="game-create-review-map"></span>
+					</span>
+					<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review', 'game-create-variant')" onkeydown="checkEvent('')">Edit</span>
+				</div>
+				
+				<div class="game-create-review-section">
+					<span>
+						<strong>Scoring type: </strong><span id="game-create-review-scoring"></span>
+					</span>
+					<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review', 'game-create-scoring')" onkeydown="checkEvent('')">Edit</span>
+				</div>
+				
+				<div class="game-create-review-section">
+					<span>
+						<strong>Bet: </strong><span id="game-create-review-bet"></span>
+					</span>
+					<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review', 'game-create-bet')" onkeydown="checkEvent('')">Edit</span>
+				</div>
+				
+				<div class="game-create-review-section">
+					<span>
+						<strong>Live or Non-Live? </strong><span id="game-create-review-live"></span>
+					</span>
+					<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review', 'game-create-phase-length')" onkeydown="checkEvent('')">Edit</span>
+				</div>
+				
+				<div class="game-create-review-section">
+					<span>
+						<strong>Phase Length: </strong><span id="game-create-review-phase-length"></span>
+					</span>
+					<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review', 'game-create-phase-length')" onkeydown="checkEvent('')">Edit</span>
+				</div>
+				
+				<!-- if live and phase length changes, show -->
+				<div style="display: none;" id="game-create-review-live-switch">
+					<div class="game-create-review-section">
+						<span>
+							<strong>Phase Switch: </strong><span id="game-create-review-phase-switch"></span>
+						</span>
+						<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review', 'game-create-phase-switch')" onkeydown="checkEvent('')">Edit</span>
+					</div>
+
+					<div class="game-create-review-section">
+						<span>
+							<strong>Phase Length After Switch: </strong><span id="game-create-review-phase-switch-length"></span>
+						</span>
+						<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review', 'game-create-next-phase')" onkeydown="checkEvent('')">Edit</span>
+					</div>
+				</div>
+
+				<div class="game-create-review-section">
+					<span>
+						<strong>Time To Fill Game: </strong><span id="game-create-review-fill"></span>
+					</span>
+					<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review')" onkeydown="checkEvent('')">Edit</span>
+				</div>
+
+				<div class="game-create-review-section">
+					<span>
+						<strong>Press Type: </strong><span id="game-create-review-press"></span>
+					</span>
+					<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review')" onkeydown="checkEvent('')">Edit</span>
+				</div>
+
+				<div class="game-create-review-section">
+					<span>
+						<strong>Anonymous Players? </strong><span id="game-create-review-anon"></span>
+					</span>
+					<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review')" onkeydown="checkEvent('')">Edit</span>
+				</div>
+
+				<div class="game-create-review-section">
+					<span>
+						<strong>Draw Votes Hidden? </strong><span id="game-create-review-draw"></span>
+					</span>
+					<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review')" onkeydown="checkEvent('')">Edit</span>
+				</div>
+
+				<div class="game-create-review-section">
+					<span>
+						<strong>Reliability Rating Requirement: </strong><span id="game-create-review-rr"></span>
+					</span>
+					<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review')" onkeydown="checkEvent('')">Edit</span>
+				</div>
+
+				<div class="game-create-review-section">
+					<span>
+						<strong>Excused Missed Turns Allowed: </strong><span id="game-create-review-cds"></span>
+					</span>
+					<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review')" onkeydown="checkEvent('')">Edit</span>
+				</div>
+
+				<!-- if private, show -->
+				<div style="display: none;" class="game-create-review-section" id="game-create-review-invite">
+					<span>
+						<strong>Invite Code: </strong>
+						<span id="game-create-review-pw-button" tabIndex="0" onkeydown="checkEvent('code')" onClick="toggleShowCode()">[show invite code]</span>
+						<span id="game-create-review-pw"></span>
+					</span>
+					<span class="game-create-review-edit" tabIndex="0" onClick="showNext('game-create-review')" onkeydown="checkEvent('')">Edit</span>
+				</div>
+
+				<div class="notice game-create-submit game-create-buttons">
+					<input class="green-Submit" type="submit" value="Create Your Game">
+				</div>
+			</div>
+
 
 		</form>
 	</div>
