@@ -76,6 +76,10 @@ cacheUpdate.js
 		user has viewed the message.
 	- Messages from the viewing user italicized
 	
+screen/screenHelpers.js
+	- Provides simple screen type detection run on page load and assigns a value to a 
+		local storage object we can use to enhance user experience and features. 
+	
 board/ 
 	- Contains code which represents board/game data; providing a data-structure which
 		can be used to easily generate orders or draw dynamic data to the map.

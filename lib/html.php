@@ -531,6 +531,7 @@ class libHTML
 			
 			<script type="text/javascript" src="useroptions.php"></script>
 			<script type="text/javascript" src="javascript/clickhandler.js"></script>
+			<script type="text/javascript" src="javascript/screen/screenHelpers.js"></script>
 			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
 			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/scriptaculous.js').'"></script>
 			<link rel="stylesheet" type="text/css" href="'.STATICSRV.l_s('contrib/js/pushup/src/css/pushup.css').'" />
@@ -919,7 +920,7 @@ class libHTML
 				$menu.='<div class = "nav-tab"> <a href="forum.php" title="The forum; chat, get help, help others, arrange games, discuss strategies">Forum</a> </div>';
 			}
 
-			if (is_object($User))
+			if( !$User->type['User'] )
 			{
 				if( !$User->type['User'] )
 				{
@@ -972,48 +973,48 @@ class libHTML
 								<a href="contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">Forum Settings</a>';
 						}
 						$menu.='
-							<a href="usercp.php" title="Change your user specific settings">Site Settings</a>
-						</div>
-                	</div>
-                	<div id="navSubMenu" class = "clickable nav-tab">Help ▼
-                        <div id="nav-drop">
-                        	<a href="rules.php">Site Rules</a>
-							<a href="faq.php" title="Frequently Asked Questions">FAQ</a>
-							<a href="intro.php" title="Intro to Diplomacy">Diplomacy Intro</a>
-							<a href="points.php" title="Points and Scoring Systems">Points/Scoring</a>
-							<a href="variants.php" title="Active webDiplomacy variants">Variants</a>
-							<a href="help.php" title="Site information; guides, stats, links">More Info</a>
-							<a href="contactUsDirect.php">Contact Us</a>
-							<a href="donations.php">Donate</a>
-                        </div>
-                    </div>';
-				}
+							<a href="contrib/phpBB3/ucp.php?i=pm" title="Read your messages">Private Messages</a>
+							<a href="contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">Forum Settings</a>';
+					}
+					$menu.='
+						<a href="usercp.php" title="Change your user specific settings">Site Settings</a>
+					</div>
+				</div>
+				<div id="navSubMenu" class = "clickable nav-tab">Help ▼
+					<div id="nav-drop">
+						<a href="rules.php">Site Rules</a>
+						<a href="faq.php" title="Frequently Asked Questions">FAQ</a>
+						<a href="intro.php" title="Intro to Diplomacy">Diplomacy Intro</a>
+						<a href="points.php" title="Points and Scoring Systems">Points/Scoring</a>
+						<a href="variants.php" title="Active webDiplomacy variants">Variants</a>
+						<a href="help.php" title="Site information; guides, stats, links">More Info</a>
+						<a href="contactUsDirect.php">Contact Us</a>
+						<a href="donations.php">Donate</a>
+					</div>
+				</div>';
 			}
 
-			if ( is_object($User) )
+
+			if ( $User->type['Admin'] or $User->type['Moderator'] )
 			{
-				if ( $User->type['Admin'] or $User->type['Moderator'] )
+				$menu.=' <div id="navSubMenu" class = "clickable nav-tab">Mods ▼
+					<div id="nav-drop">
+						<a href="admincp.php">Admin CP</a>';
+				if( isset(Config::$customForumURL) ) { $menu.='<a href="contrib/phpBB3/mcp.php">Forum CP</a>'; }
+
+				$menu.='
+					<a href="admincp.php?tab=Multi-accounts">Multi Finder</a>
+					<a href="admincp.php?tab=Chatlogs">Pull Press</a>
+					<a href="admincp.php?tab=AccessLog">Access Log</a>
+					<a href="profile.php">Find User</a>';
+
+				if ( $User->type['Admin'] && isset(Config::$customForumURL))
 				{
-					$menu.=' <div id="navSubMenu" class = "clickable nav-tab">Mods ▼
-                        <div id="nav-drop">
-							<a href="admincp.php">Admin CP</a>';
-
-					if( isset(Config::$customForumURL) ) { $menu.='<a href="contrib/phpBB3/mcp.php">Forum CP</a>'; }
-
-					$menu.='
-						<a href="admincp.php?tab=Multi-accounts">Multi Finder</a>
-						<a href="admincp.php?tab=Chatlogs">Pull Press</a>
-						<a href="admincp.php?tab=AccessLog">Access Log</a>
-						<a href="search.php">Find User</a>';
-
-					if ( $User->type['Admin'] && isset(Config::$customForumURL))
-					{
-						$menu.='<a href="adminInfo.php">Admin Info</a>';
-					}
-
-					$menu.=' </div>
-					</div>';
+					$menu.='<a href="adminInfo.php">Admin Info</a>';
 				}
+
+				$menu.=' </div>
+				</div>';
 			}
 			$menu.='</div></div></div>';
 		}
