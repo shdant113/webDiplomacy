@@ -20,9 +20,15 @@
 
 /*********
  * Simple detection for mobile phone, tablet, or touch screens
- * utilizing local storage
+ * utilizing local storage. Sets cookie that is reloaded on each 
+ * page load showing screen type
  ********/
-function execute() {
+
+function executeScreenHelpers() {
+    if (getCookie("mobile-screen")) {
+        unsetCookie("mobile-screen")
+    };
+
     var phone = checkIfPhoneScreen();
     var tablet = false;
     var touch = false;
@@ -34,13 +40,13 @@ function execute() {
             touch = checkIfTouchScreen();
         }
     }
-    
-    if (!phone && !tablet && !touch) {
-        localStorage.setItem("screen", "desktop");
+
+    if (!tablet && !phone && !touch) {
+        setCookie("desktop-screen");
     }
 }
 
-execute();
+executeScreenHelpers();
 
 /**
  * Check if user's screen is touch compatible utilizing navigator interface
@@ -77,7 +83,7 @@ function checkIfTouchScreen() {
     }
 
     if (touchScreen) {
-        localStorage.setItem("screen", "touch");
+        setCookie("mobile-screen", "touch");
         return true;
     }
 
@@ -89,7 +95,7 @@ function checkIfTouchScreen() {
  */
 function checkIfPhoneScreen() {
     if (window.innerWidth < 800) {
-        localStorage.setItem("screen", "phone");
+        setCookie("mobile-screen", "phone");
         return true;
     }
 
@@ -101,7 +107,7 @@ function checkIfPhoneScreen() {
  */
 function checkIfTabletScreen() {
     if (window.innerWidth > 800 && window.innerWidth < 1100) {
-        localStorage.setItem("screen", "tablet");
+        setCookie("mobile-screen", "tablet");
         return true;
     }
 

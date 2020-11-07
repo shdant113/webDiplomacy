@@ -528,9 +528,9 @@ class libHTML
 			<meta name="keywords" content="'.l_t('diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy').'" />
 			<link rel="shortcut icon" href="'.STATICSRV.l_s('favicon.ico').'" />
 			<link rel="icon" href="'.STATICSRV.l_s('favicon.ico').'" />
-			
 			<script type="text/javascript" src="useroptions.php"></script>
 			<script type="text/javascript" src="javascript/clickhandler.js"></script>
+			<script type="text/javascript" src="javascript/helpers/cookieHelpers.js"></script>
 			<script type="text/javascript" src="javascript/screen/screenHelpers.js"></script>
 			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
 			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/scriptaculous.js').'"></script>
@@ -885,14 +885,9 @@ class libHTML
 							<img id="logo" src="'.l_s('images/logo.png').'" alt="'.l_t('webDiplomacy').'" />
 						</a>';
 
-
 		if ( is_object( $User ) )
 		{
-			if ( ! $pages[$scriptname]['inmenu'] )
-				$arguments = str_replace('&', '&amp;', $_SERVER['QUERY_STRING']);
-			else
-				$arguments = '';
-
+			/* log in/out */
 			$menu .= '
 				<div>
 					<div id="header-welcome">
@@ -906,117 +901,20 @@ class libHTML
 						:l_t('Welcome, Guest')).'
 					</div>';
 
-			/* begin dropdown menu */
-			$menu .= '
-			<div id="header-goto">
-            <div class="nav-wrap">
-			<div class = "nav-tab"> <a href="index.php?" title="See what\'s happening">Home</a> </div>';
-			if( isset(Config::$customForumURL) )
+			/* use mobile header for mobile and tablet screens */
+			
+			if (isset($_COOKIE['mobile-screen']))
 			{
-				$menu.='<div class = "nav-tab"> <a href="'.Config::$customForumURL.'" title="The forum; chat, get help, help others, arrange games, discuss strategies">Forum</a> </div>';
-			}
-			else
-			{
-				$menu.='<div class = "nav-tab"> <a href="forum.php" title="The forum; chat, get help, help others, arrange games, discuss strategies">Forum</a> </div>';
+				$menu .= self::mobileHeader();
 			}
 
-			if( !$User->type['User'] )
+			/* if mobile screen cookie is not set as mobile or tablet default to dropdown header */
+			else if (isset($_COOKIE['desktop-screen']))
 			{
-				if( !$User->type['User'] )
-				{
-					$menu.='
-					<div class="nav-tab">
-						<a href="logon.php" title="Log onto webDiplomacy using an existing user account">Log on</a>
-					</div>';
-					$menu.='
-					<div class="nav-tab">
-						<a href="register.php" title="Make a new user account">Register</a>
-					</div>';
-					$menu.='
-					<div id="navSubMenu" class = "clickable nav-tab">Help ▼
-                        <div id="nav-drop">
-                        	<a href="rules.php">Site Rules</a>
-							<a href="faq.php" title="Frequently Asked Questions">FAQ</a>
-							<a href="intro.php" title="Intro to Diplomacy">Diplomacy Intro</a>
-							<a href="points.php" title="Points and Scoring Systems">Points/Scoring</a>
-							<a href="variants.php" title="Active webDiplomacy variants">Variants</a>
-							<a href="help.php" title="Site information, guides, stats, links">More Info</a>
-							<a href="donations.php">Donate</a>
-                        </div>
-                    </div>';
-				}
-				else
-				{
-					$menu.='
-					<div id="navSubMenu" class="clickable nav-tab">Search ▼
-                        <div id="nav-drop">
-							<a href="search.php">Find User</a>
-							<a href="gamelistings.php?gamelistType=Search">Game Search</a>
-							<a href="detailedSearch.php" title="advanced search of users and games">Advanced Search</a>
-						</div>
-					</div>
-					<div id="navSubMenu" class="clickable nav-tab">Games ▼
-                        <div id="nav-drop">
-							<a href="gamelistings.php?gamelistType=New" title="Game listings; a searchable list of the games on this server">New Games</a>
-							<a href="gamelistings.php?gamelistType=Open%20Positions" title="Open positions dropped by other players, free to claim">Open Positions</a>
-							<a href="gamecreate.php" title="Start up a new game">Create a New Game</a>
-							<a href="ghostRatings.php" title="Ghost Ratings Information">Ghost Ratings</a>
-							<a href="tournaments.php" title="Information about tournaments on webDiplomacy">Tournaments</a>
-							<a href="halloffame.php" title="Information about tournaments on webDiplomacy">Hall of Fame</a>
-                        </div>
-                    </div>
-					<div id="navSubMenu" class="clickable nav-tab">Account ▼
-						<div id="nav-drop">';
-						if( isset(Config::$customForumURL) ) {
-							$menu.='
-								<a href="contrib/phpBB3/ucp.php?i=pm" title="Read your messages">Private Messages</a>
-								<a href="contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">Forum Settings</a>';
-						}
-						$menu.='
-							<a href="contrib/phpBB3/ucp.php?i=pm" title="Read your messages">Private Messages</a>
-							<a href="contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">Forum Settings</a>';
-					}
-					$menu.='
-						<a href="usercp.php" title="Change your user specific settings">Site Settings</a>
-					</div>
-				</div>
-				<div id="navSubMenu" class = "clickable nav-tab">Help ▼
-					<div id="nav-drop">
-						<a href="rules.php">Site Rules</a>
-						<a href="faq.php" title="Frequently Asked Questions">FAQ</a>
-						<a href="intro.php" title="Intro to Diplomacy">Diplomacy Intro</a>
-						<a href="points.php" title="Points and Scoring Systems">Points/Scoring</a>
-						<a href="variants.php" title="Active webDiplomacy variants">Variants</a>
-						<a href="help.php" title="Site information; guides, stats, links">More Info</a>
-						<a href="contactUsDirect.php">Contact Us</a>
-						<a href="donations.php">Donate</a>
-					</div>
-				</div>';
+				$menu .= self::mainDropdownHeader();
 			}
 
-
-			if ( $User->type['Admin'] or $User->type['Moderator'] )
-			{
-				$menu.=' <div id="navSubMenu" class = "clickable nav-tab">Mods ▼
-					<div id="nav-drop">
-						<a href="admincp.php">Admin CP</a>';
-				if( isset(Config::$customForumURL) ) { $menu.='<a href="contrib/phpBB3/mcp.php">Forum CP</a>'; }
-
-				$menu.='
-					<a href="admincp.php?tab=Multi-accounts">Multi Finder</a>
-					<a href="admincp.php?tab=Chatlogs">Pull Press</a>
-					<a href="admincp.php?tab=AccessLog">Access Log</a>
-					<a href="profile.php">Find User</a>';
-
-				if ( $User->type['Admin'] && isset(Config::$customForumURL))
-				{
-					$menu.='<a href="adminInfo.php">Admin Info</a>';
-				}
-
-				$menu.=' </div>
-				</div>';
-			}
-			$menu.='</div></div></div>';
+			$menu .= '</div>';
 		}
 		else
 		{
@@ -1033,15 +931,158 @@ class libHTML
 						</div>
 					</div>';
 		}
+
+		/* end dropdown menu */
+
 		$menu .= '
 			</div></div>
 			<div id="seperator"></div>
 			<div id="seperator-fixed"></div>
 			<!-- Menu end. -->';
 
-		/* end dropdown menu */
+		return $menu;
+	}
+
+	private static function mainDropdownHeader()
+	{
+		global $User;
+		$menu = '';
+
+		/* Display the home page and forum */ 
+		$menu .= '
+			<div id="header-goto">
+            	<div class="nav-wrap">
+					<div class = "nav-tab"> 
+						<a href="index.php?" title="Home page">Home</a> 
+					</div>';
+
+		if( isset(Config::$customForumURL) )
+		{
+			$menu .= '
+					<div class = "nav-tab"> 
+						<a href="'.Config::$customForumURL.'" title="The forum">Forum</a> 
+					</div>';
+		}
+		else
+		{
+			$menu .= '
+					<div class = "nav-tab"> 
+						<a href="forum.php" title="The forum">Forum</a> 
+					</div>';
+		}
+
+		/* If not logged in, display log in and register, and display help dropdown */
+		if( !$User->type['User'] )
+		{
+			$menu .= '
+					<div class="nav-tab">
+						<a href="logon.php" title="Log in">Log in</a>
+					</div>
+					<div class="nav-tab">
+						<a href="register.php" title="Make a new user account">Register</a>
+					</div>
+					<div id="navSubMenu" class = "clickable nav-tab">Help ▼
+						<div id="nav-drop">
+							<a href="rules.php">Site Rules</a>
+							<a href="faq.php" title="Frequently Asked Questions">FAQ</a>
+							<a href="intro.php" title="Intro to Diplomacy">Diplomacy Intro</a>
+							<a href="points.php" title="Points and Scoring Systems">Points/Scoring</a>
+							<a href="variants.php" title="Active webDiplomacy variants">Variants</a>
+							<a href="help.php" title="Site information, guides, stats, links">More Info</a>
+							<a href="donations.php">Donate</a>
+						</div>
+					</div>';
+		}
+
+		/* If logged in, display search, games, account, and help dropdowns */
+		else
+		{
+			$menu .= '
+					<div id="navSubMenu" class="clickable nav-tab">Search ▼
+						<div id="nav-drop">
+							<a href="search.php">Find User</a>
+							<a href="gamelistings.php?gamelistType=Search">Game Search</a>
+							<a href="detailedSearch.php" title="advanced search of users and games">Advanced Search</a>
+						</div>
+					</div>
+					<div id="navSubMenu" class="clickable nav-tab">Games ▼
+						<div id="nav-drop">
+							<a href="gamelistings.php?gamelistType=New" title="Game listings; a searchable list of the games on this server">New Games</a>
+							<a href="gamelistings.php?gamelistType=Open%20Positions" title="Open positions dropped by other players, free to claim">Open Positions</a>
+							<a href="gamecreate.php" title="Start up a new game">Create a New Game</a>
+							<a href="ghostRatings.php" title="Ghost Ratings Information">Ghost Ratings</a>
+							<a href="tournaments.php" title="Information about tournaments on webDiplomacy">Tournaments</a>
+							<a href="halloffame.php" title="Information about tournaments on webDiplomacy">Hall of Fame</a>
+						</div>
+					</div>
+					<div id="navSubMenu" class="clickable nav-tab">Account ▼
+						<div id="nav-drop">';
+
+			if( isset(Config::$customForumURL) ) {
+				$menu .= '
+							<a href="contrib/phpBB3/ucp.php?i=pm" title="Read your messages">Private Messages</a>
+							<a href="contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">Forum Settings</a>';
+			}
+
+			$menu .= '
+							<a href="usercp.php" title="Change your user specific settings">Site Settings</a>
+						</div>
+					</div>
+					<div id="navSubMenu" class = "clickable nav-tab">Help ▼
+						<div id="nav-drop">
+							<a href="rules.php">Site Rules</a>
+							<a href="faq.php" title="Frequently Asked Questions">FAQ</a>
+							<a href="intro.php" title="Intro to Diplomacy">Diplomacy Intro</a>
+							<a href="points.php" title="Points and Scoring Systems">Points/Scoring</a>
+							<a href="variants.php" title="Active webDiplomacy variants">Variants</a>
+							<a href="help.php" title="Site information; guides, stats, links">More Info</a>
+							<a href="contactUsDirect.php">Contact Us</a>
+							<a href="donations.php">Donate</a>
+						</div>
+					</div>';
+
+			/* For moderators, link tools */
+			if ( $User->type['Admin'] or $User->type['Moderator'] )
+			{
+				$menu .= ' 
+					<div id="navSubMenu" class = "clickable nav-tab">Mods ▼
+						<div id="nav-drop">
+							<a href="admincp.php">Admin CP</a>';
+
+				if( isset(Config::$customForumURL) ) 
+				{ 
+					$menu .= '
+							<a href="contrib/phpBB3/mcp.php">Forum CP</a>'; 
+				}
+
+				$menu .= '
+							<a href="admincp.php?tab=Multi-accounts">Multi Finder</a>
+							<a href="admincp.php?tab=Chatlogs">Pull Press</a>
+							<a href="admincp.php?tab=AccessLog">Access Log</a>
+							<a href="search.php">Find User</a>';
+
+				if ( $User->type['Admin'] && isset(Config::$customForumURL))
+				{
+					$menu .= '
+							<a href="adminInfo.php">Admin Info</a>';
+				}
+
+				$menu .= ' 
+						</div>
+					</div>';
+			}
+		}
+
+		$menu .= '
+				</div>
+			</div>';
 
 		return $menu;
+	}
+
+	private static function mobileHeader()
+	{
+		return "<div>hi</div>";
 	}
 
 	/**
@@ -1268,6 +1309,7 @@ class libHTML
 			}
 			User = new UserClass();
 			var headerEvent = document.getElementsByClassName("clickable");
+			var mobileHeaverEvent = document.getElementsByClassName("mobileClickable");
 
 			WEBDIP_DEBUG='.(Config::$debug ? 'true':'false').';
 
@@ -1275,7 +1317,6 @@ class libHTML
 
 				try {
 					'.l_jf('Locale.onLoad').'();
-
 					'.l_jf('setForumMessageIcons').'();
 					'.l_jf('setPostsItalicized').'();
 					'.l_jf('updateTimestamps').'();
@@ -1297,8 +1338,17 @@ class libHTML
 				} catch (e) {
 					'.(Config::$debug ? 'alert(e);':'').'
 				}
-			}, this)
+			}, this);
 			for (var i = 0; i < headerEvent.length; i++) {
+				headerEvent[i].addEventListener("click", function(e){
+					try {
+						'.l_jf('click').'(e);
+					} catch ( e ){
+						'.(Config::$debug ? 'alert(e);':'').'
+					}
+				}, this);
+			}
+			for (var i = 0; i < mobileHeaderEvent.length; i++) {
 				headerEvent[i].addEventListener("click", function(e){
 					try {
 						'.l_jf('click').'(e);

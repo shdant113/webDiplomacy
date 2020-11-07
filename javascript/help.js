@@ -19,7 +19,7 @@
 // See doc/javascript.txt for information on JavaScript in webDiplomacy
 
 /* 
- * Helper functions for tutorial mode modal operations
+ * Javascript functions for tutorial mode modal operations
 */
 
 function indexForward(index, tutorial = true) {
@@ -37,13 +37,6 @@ function endTutorial() {
         }
     });
     hideHelp();
-}
-
-function unsetCookie(name) {
-    var date = new Date();
-    date.setTime(Date.now()+(-1 * 24 * 60 * 60 * 1000));
-    var expiration = "; expires=" + date.toGMTString();
-    document.cookie = name + "=" + expiration + "; path=/";
 }
 
 function hideHelp() {
